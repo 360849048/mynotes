@@ -1,0 +1,40 @@
+Cookie是用来解决HTTP协议无状态缺陷的一种补充机制，存储在客户端上。
+	用户第一次登录后，服务器会返回cookie给浏览器，浏览器会将cookie保存到本地，当该用户发送第二次请求时，会自动将上次存储的cookie数据自动携带给服务器。服务器根据http请求中携带的cookie来判断当前的用户是哪一个。
+	cookie不宜存储过多数据，通常大小不超过4kb
+
+cookie失效分为2种：
+	1. 设置失效时间，这种cookie会保存在硬盘中。保存在硬盘上的cookie可以在不同的浏览器进程间共享；
+	2. 不设置失效时间，这种cookie保存在内存中，关闭浏览器就会失效，对于共享这种cookie，不同的浏览器有不同的处理方式。（也被称为会话cookie）
+
+Session的作用和cookie类似，通常和cookie结合使用
+	使用session和cookie通常有两种方案
+		*session存储在服务端：通过cookie存储一个session_id，具体数据保存在服务端的session中。如果用户已经登录，服务器会在cookie中保存一个session_id，下次请求的时候，会把该session_id携带上来，服务器根据session_id在session库中获取用户的session数据，就能知道该用户是谁，以及之前保存的一些状态信息。这种方式的专业术语叫做server side session
+		*session存储在客户端：将session数据加密，然后存储在cookie中。这种方式的专业术语叫做client side session。flask采用这种方式
+		
+
+在flask中操作cookie，需要通过response对象进行操作
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

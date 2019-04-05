@@ -1,0 +1,7 @@
+* HTMLUnknownElement
+	例如<username></username>属于HTMLUnknownElement
+	在HTML规范中，HTMLUnknownElement也是合法元素，一般CSS和JS都可以对它进行普通元素一样的操作。和其它规范内的普通元素的区别是，部分规范内的HTML元素带有一些特殊的属性或方法
+
+* customElements(自定义元素)
+	例如<user-name></user-name>属于自定义元素，中间必须有'-'连接
+	自定义元素可以通过ES6语法的继承进行扩展，实现组件功能。

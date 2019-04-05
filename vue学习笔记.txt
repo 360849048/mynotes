@@ -1,0 +1,322 @@
+* 使用vue组件时，适当使用is属性
+    HTML规范中，某些标签下只能使用指定标签，
+    比如ul下面用li,
+    select下面用option，
+    可以使用 is 属性解决vue组件问题
+    例如：
+        <table>
+            <tbody>
+                <tr is="row"></tr>
+            </tbody>
+        <table>
+
+* vue使用ref属性操作DOM
+    当ref写在标签上时，使用this.$refs.ref可以获取到这个dom节点
+    当ref写在组件上时，使用this.$refs.ref可以获取到这个组件的引用
+    例如：
+        <div ref='example1'>hello</div>
+        console.log( this.$refs.example1.innerText )
+        结果得到hello
+        
+        <vue-component ref='example2'></vue-component>
+        console.log( this.$refs.example1 )
+        结果输出vue-component子组件的引用，可以通过这个获取到组件内部的data属性等(不过，不建议这么传递数据)。
+    在实际中测试中发现：v-for循环得到的ref，需要使用this.$refs['example'][0]才能正确获取到dom节点。普通得到的ref，只需要this.$refs['example']即可。
+    
+* 父组件向子组件传递数据: props
+    父组件通过属性向子组件传递数据
+    例如：
+        父组件中 <child-component :num='5'></child-component>
+        子组件中  props: ['num']  this.num即可使用该数据
+        注意：数据只能单向传递，在子组件中修改this.num会出发warning
+    props参数校验：
+        子组件中 
+            num: {
+                type: Number,                    // 校验多个类型可以用[Number, String]
+                required: false,
+                default: 1,
+                validator: function(value){     // 自定义校验
+                    return (value < 10)
+                }
+            }
+    
+    注意：非props特性说明（这个东西用的很少）
+    当父组件传递了数据，但是在子组件中并没有使用props进行接收，该属性会被添加到子组件最外层的dom标签上
+        
+
+* 子组件向父组件通过$emit传递数据
+
+
+* 组件响应原生HTML事件，需要在事件名后面增加'.native'
+    比如<child-component @click.native='handleClick'></child-component>
+
+* 非父子组件的传值
+    方法1：
+        通过父子组件关系一层一层传值，这种方法适用于少量，关系不是特别复杂的组件。
+        
+    方法2：
+        利用总线机制（bus/总线/发布订阅模式/观察者模式）进行传值
+        做法为：
+            创建一个Vue对象，专门用来发布和获取事件
+            创建bus：
+                Vue.prototype.bus = new Vue()
+            发布消息:
+                this.bus.$emit('msgupdate', this.msg)
+            在其他组件中接收消息:
+				通常在mounted()编写以下代码，进行“事件绑定”
+                this.bus.$on('msgupdate', function(msg){...})
+        
+    方法3：
+        利用vuex
+
+* Vue中的动态组件
+    调用组件时候用:
+    <component :is='componentType'></component> (componentType是一个data属性)
+    
+* 组件插槽 slot
+    使用组件的时候在内部写html代码，形式如：
+        父组件：
+        <child-component>
+            <p>Hello World</p>
+        </child-component>
+        子组件：
+        Vue.component('child-component', {
+            template: 
+                "<div>
+                    <p>what's up</p>
+                    <slot><p>默认内容</p></slot>
+                </div>"
+        })
+    * 具名插槽（使用多个slot）
+        父组件：
+        <child-component>
+            <p slot='header'>header</p>
+            <p slot='footer'>footer</p>
+        </child-component>
+        子组件：
+        Vue.component('child-component', {
+            template: 
+                "<div>
+                    <p>what's</p>
+                    <slot name='header'></slot>
+                    <slot name='footer'></slot>
+                </d iv>"
+        })
+    * 作用域插槽
+        
+* 路由：根据网址的不同，返回不同的内容给用户。
+
+
+* 多页面应用的特点
+    优点：首次加载速度快，SEO好（搜索引擎可以识别HTML中的内容）
+
+* 单页面应用的特点
+    优点：页面切换快
+    缺点：首次加载速度慢，SEO差（单页面应用通过JS动态渲染每页不同的内容）
+    
+    * Vue提供服务器渲染技术，可以解决单页面应用的缺点
+
+
+* 移动端网页开发
+    * meta标签编写
+    <meta name="viewport" content="width=deviec-width, initial-scale=1.0 minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    * fastclick库的引入
+        解决移动端某些浏览器click时间300ms延时问题。
+        import fastClick from 'fastclick'
+        fastClick.attach(document.body)
+    
+    * 使用stylus编写css（类似于sass，需要安装stylus和stylus-loader）
+    
+    * 轮播图插件 vue-awesome-swiper
+        安装稳定版本： npm install vue-awesome-swiper@2.6.7 --save
+    
+* 利用padding-bottom在动态尺寸下实现固定宽高比（padding-bottom的值为%时，定义边距尺寸基于父元素的宽度）
+
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    padding-bottom: 50%;  
+    或者（某些浏览器兼容有问题）
+    width: 100%;
+    height: 50vw;
+
+* vue-cli中的深度作用选择器
+    * 背景说明：使用 scoped 后，父组件的样式将不会渗透到子组件中。不过一个子组件的根节点会同时受其父组件的 scoped CSS 和子组件的 scoped CSS 的影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式。
+    * 如果你希望 scoped 样式中的一个选择器能够作用得“更深”，例如影响子组件，你可以使用 >>> 操作符：
+	* 实测发现：使用了scss后，>>>操作符会失效。为了达到同样的效果，可以在*.vue文件中写两个sytle标签，一个为<style></style>，另一个为<style scoped></style>
+
+* min-width: 0可以解决flex布局下ellipsis失效的问题
+
+* webpack的代理功能
+	在config/index.js中，找到proxyTable属性
+	编写实例如下：
+	proxyTable: {
+		'/api': {
+			target: 'http://localhost:8080',
+			pathRewrite: {
+				'^/api': '/static/mock'
+			}
+		}
+	}
+    同样可以利用代理功能实现前后端联调，即将target地址设置为后端地址即可。
+* 使用vue-awesome-swiper实现滚动效果，它是对swiper.js的封装，具体使用方法在github中搜索vue-awesome-swiper即可。
+* 使用better-scroll插件，改善滚动的视觉效果，类似于原生APP的拖拽滚动。
+    better-scroll默认会屏蔽当前页面的click事件，如需要响应click事件，需要在初始化BScroll对象时候，传入click: true	better-scroll主要用在移动端，点PC端也能用，但是默认不可用鼠标滚轮事件。如需要相应鼠标滚轮滚动事件，需要在初始化BScroll对象时候，传入mouseWheel: true		传入参数的方法为：this.scroll = new BScroll(this.$refs.wrapper, {click: true, mouseWheel: true});
+* element.offsetTop和element.offsetLeft表示的是什么？    HTMLElement.offsetTop和HTMLElement.offsetLeft是只读属性，它们分别返回当前元素相对于其offsetParent元素的的顶部和左边的距离，0坐标是offsetParent的height和width的起始位置。    HTMLElement.offsetParent是只读属性，它返回一个指向最近的包含该元素的定位元素。如果没有定位元素，则offsetParent返回的可能是body元素或者null。当元素的style.display设置为"none"时，offsetParent返回null。
+* event.clientX以什么为0坐标？    event.clientX返回当事件被触发时鼠标指针相对于浏览器视图页面的水平坐标，它和页面滚动位置无关。
+	event.pageX和clientX的差别就在于，pageX返回鼠标指针响度与浏览器页面的水平坐标，它和滚动位置有关。* vue中的updated()钩子函数什么时候被执行？    当页面中的数据发生变化，页面重新渲染视图完毕后，执行生命周期钩子updated()* 设置函数节流，提高性能    有时候某些函数触发频率非常高，比如onmousemove和ontouchmove事件，在不影响视觉效果的情况下，可以通过函数节流的方法，降低内部复杂方法的执行频率，提高页面性能。    函数节流的实现方式思路：使用setTimeout对所需要执行的逻辑代码进行延迟执行，在每次进入到扫描函数时，先使用clearTimeout清除之前的计时器，从而避免频繁执行而降低性能。    基本实现代码示例如下：        var processor = {           timeoutId: null,             //实际进行处理的方法           performProcessing: function(){             //实际执行的代码           },          //初始处理调用的方法          process: function(){            clearTimeout(this.timeoutId);            var that = this;            this.timeoutId = setTimeout(function(){              that.performProcessing();            }, 100);          }        };        //尝试开始执行        processor.process();    * Vuex的使用    为什么使用Vuex？当多个组件共享数据时候，多层嵌套的组件传值非常麻烦，对于兄弟组件的传值更是无能为力；当不同的视图更改同一个数据状态时，导致后期代码维护和debug非常困难（类似于lasal class2中多个client对同一个server进行写值）。Vuex主要解决上面两个问题，Vuex解决第一个问题的思路是在项目中创建一个公共的store，将需要共享的数据放入到store中；Vuex解决第二个问题的思路是通过定义和隔离状态管理中的各种概念并强制遵守一定的规则，实际创建了actions（dispatch）和mutations（commit）两层机构，数据的更改需要经由这两层才能实现（实际也可以在组件中直接commit到mutation进行数据更改），类似于class中的write方法* 使用localStorage实现类似cookie功能    localStorage是浏览器的一个全局对象，当页面刷新时，该对象的内容不会丢失。但是当浏览器关闭了本地存储功能后，继续使用该对象会报错！所以操作该对象时，最好在try{...}catch(e){...}中执行。localStorage不会自动清除，如果需要清空localStorage内容，需要使用localStorage.clear()方法。* Vuex中的mapState辅助函数，映射vuex中的state到组件的computed属性，以state中的city为例，使用了mapState进行映射后，不再需要使用$store.state.city，只需要用city即可。    mapMutations使用方法与此类似，只需要把mutations的方法相应放到methods属性中    import { mapState } from 'vuex'        export default {        computed: mapstate{{            city: 'city'                // 方法一            city: state => state.city   // 方法二        }}    }    当映射计算属性名称与state的子节点名称相同时，可以使用更简单的方法    注意这里给mapState传入的是一个数组    export default {        computed: mapState([            'city'        ])    }    当使用对象展开运算符（仍处于ECMAScript的stage-4阶段），可以简化上面的写法    export default {        computed: {            localComputed () {...}            ...mapState(['city'])       // 也可以传入对象 ...mapState({curCity: 'city'})            }    }        * 如何将一个新项目上传到github（连接到远程仓库）？   本地git仓库和github仓库之间的传输是通过SSH加密的，在连接时需要进行如下设置    前提：        创建SSH KEY（创建id_rsa和id_rsa.pub两个文件）        ssh-keygen -t rsa -C "youremail@example.com"        登录github，在个人账户的设置中，新建一个SSH keys将上一步创建得到的id_rsa.pub文件内容全部复制到里面    1. 在github中新建一个git仓库，例如新建的git仓库地址是        git@github.com:360849048/MyProj.git    2. 在本地项目的目录下运行git bash，输入命令：        git remote add origin git@github.com:360849048/MyProj.git        git push -u origin master * vuex中的getter    getter作用类似于组件中的computed属性，用于减少数据的冗余。* 使用Vue内置组件<keep-alive>提高页面性能    <keep-alive>可以将内部的子组件切换过程中的状态保留在内存中。<keep-alive>是一个抽象组件，本身不会渲染出一个DOM元素。    <keep-alive>接受两个属性：        include: 字符串或正则表达式，只有匹配的组件会被缓存；        exclude：字符串或正则表达式，任何匹配的组件都不会被缓存。        注意：当使用正则表达式时候，需要对属性使用v-bind。一般这边填写组件的name属性即可。    使用了keep-alive后，受到影响的组件会激活activated生命周期函数（本人实测，若为开启keep-alive，该方法在任何时候都不会被调用的），当组件重新在视图显示时，该方法会被调用。
+    注意：使用了keep-alive时，mounted方法只有在第一次渲染组件时才会被调用，而后每次重新显示组件时，mounted方法不会再次执行。
+    除了activated生命周期函数之外，使用keep-alive之后，还会激活对应的deactivated生命周期函数，它在页面即将被切换成新的页面时会被执行。* v-bind中拼接字符串    例如： v-bind:to="'detail/' + rec.id"* vue-router之动态路由    {        path: '/detail/:id',        name: 'Detail',        component: Detail,    }
+* 使用document.documentElement.scrollTop属性获取当前页面距离页面顶部的滚动距离，修改这个值会将页面滚动到那个位置。* addEventLIstener对应的是removeEventListener，当后者传入的形参与前者形参一模一样时，可以移除之前绑定的事件，注意执行函数必须是外部函数，如果是function ()这种是无效的。
+
+* 监听页面的滚动事件
+    window.addEventListener('scroll', this.handleScroll)
+
+* Vue可以利用组件的name属性，使用递归组件
+
+* Vue-router的切换页面时候的滚动控制
+    默认情况下，使用Vue-router进行页面切换后，新页面的滚动位置是和之前页面的滚动位置保持一致的。为了实现和普通非SPA网页一样的页面切换效果，可以直接使用下面例子的写法。
+    当创建一个 Router 实例，你可以提供一个 scrollBehavior 方法
+    scrollBehavior 方法接收 to 和 from 路由对象。第三个参数 savedPosition 当且仅当 popstate 导航 (通过浏览器的 前进/后退 按钮触发) 时才可用。
+    const router = new VueRouter({
+      routes: [...],
+      scrollBehavior (to, from, savedPosition) {
+        // return 期望滚动到哪个的位置
+        // 例如返回顶部
+        return { x: 0, y: 0 }
+      }
+    })
+
+* 使用slot功能，对Vue的transition动画进行封装成一个vue组件
+    <template>
+        <transition name="fade">
+            <slot></slot>
+        </transition>
+    </template>
+    <script></script>
+    <style>
+        .fade-enter-active, .fade-leave-active {
+            transition: all .5s;
+        }
+        .fade-enter, .fade-leave-to {
+            opacity: 0;
+        }
+    </style>
+
+* webpack默认服务器创建在ip为localhost之上，只有本机能访问。如何实现通过本机IP访问呢？
+    修改package.json文件中的内容为（增加--host 0.0.0.0）：
+        "script": {
+            ...
+            "dev": "webpack-dev-server --host 0.0.0.0 --inline --progress build/webpack.dev.config.js"
+            ...
+        }
+
+* 使用@touchstart.prevent方法，修复手机端滑动字母表的bug
+
+* 使用babel-polyfill插件，解决某些浏览器不支持promise的兼容问题。
+    安装：
+        npm install babel-polyfill
+    使用：
+        在工程的入口js文件（main.js）中，引入babel-polyfill即可
+        import 'babel-polyfill'
+
+* 合理使用Vue异步组件，提高页面性能
+    * 不使用异步组件：
+        import Comp from './Comp.vue'
+        ...
+        routes: [
+            {path: '/comp', component: Comp}
+        ]
+    * 使用异步组件：
+        routes: [
+            {path: '/comp', component: () => import('./Comp.vue')}            
+        ]
+        注意
+
+            如果您使用的是 Babel，你将需要添加 syntax-dynamic-import 插件，才能使 Babel 可以正确地解析语法。
+                1. cnpm install -D babel-plugin-syntax-dynamic-import            
+                2. 在.bablerc中引入syntax-dynamic-import插件
+                    {
+                        "presets": ["es2015", "stage-3"],
+                        "plugins": ["syntax-dynamic-import"]
+                    }
+
+            也可以直接使用：
+                {path: '/comp', component: resolve => resolve(['./Comp.vue'], resolve)}
+
+* Vue-cli3.x和Vue-cli2.x的区别
+    * 安装
+        npm install -g @vue/cli         // Vue-cli3.x
+        npm install -g vue-cli          // Vue-cli2.x
+    * 新建项目
+        npm create 项目名称             // Vue-cli3.x
+        npm init webpack 项目名称       // Vue-cli2.x
+    * 运行
+        npm run server                  // Vue-cli3.x
+        npm run dev                     // Vue-cli2.x
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

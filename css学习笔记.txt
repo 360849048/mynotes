@@ -1,0 +1,33 @@
+CSS推荐参考书
+    * CSS权威指南
+    * 精通CSS高级Web标准解决方案
+    * CSS SECRETS（作者Lea Verou，资深Web开发者，W3C CSS工作组特邀专家）
+    
+* 使用outline属性或者box-shadow属性实现多层外框效果
+    
+* text-indent: 首行缩进
+
+* 使用CSS实现内凹圆角
+    linear-gradient()
+    radius-gradient()
+
+* CSS3中的渐变色
+    * CSS3线性渐变
+        background: linear-gradient(direction, color-start, color-stop1, ...)
+        direction可以是to right/to left/to top/to bottom
+    * CSS3径向渐变
+        background: radial-gradient(shape size, start-color, ..., last-color);
+    两种CSS3渐变的颜色均可以设置百分比和像素，实现不同渐变比例。例如
+        background: linear-gradient(to right, red 40% , blue 80%);
+        background: radial-gradient(circle, rgba(0, 0, 0, 0) 100px, blue 50px);
+        当前一种颜色不小于后一种颜色的比例时，边沿过渡效果会消失！
+
+* CSS3动画animation
+	常用写法示例：
+	animation: fade 2s linear forwards;
+	@keyframs fade {
+		from {opacity: .8;}
+		to {opacity: 0;}
+	}
+
+* z-index属性只有在position不为static（默认属性）时，才能生效

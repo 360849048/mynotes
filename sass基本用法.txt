@@ -1,0 +1,78 @@
+* @import
+    例如在a.scss中引入b.scss
+        ** a.scss
+            $width : 100px;
+
+            .before {
+              width: $width;
+            }
+
+            @import "b";
+
+            .after {
+              width: $width;
+            }
+
+            .container {
+              width: $width;
+              height: $height;
+              border: 1px solid;
+            }
+        ** b.scss
+            $width: 200px;
+            $height: 200px
+
+
+Ruby-sass的编译命令
+	* 编译一个文件
+		sass xx.scss:xx.css
+	* 编译一个文件夹内所有sass文件
+		sass sassDir/:cssDir/
+	* 实时编译
+		sass --watch xx.scss:xx.css
+		
+Node-sass的编译命令
+	* 编译一个文件夹内所有的sass文件
+		node-sass -o cssDir sassDir
+	* 实时编译
+		node-sass -w  cssDir sassDir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

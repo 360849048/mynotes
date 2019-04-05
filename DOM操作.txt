@@ -1,0 +1,28 @@
+文档对象模型DOM(Document Object Model)定义了访问和处理HTML文档的标准方法。DOM将HTML文档呈现为带有元素、属性和文本的树结构（节点树）。
+
+元素节点：即标签
+文本节点：向用户展示的内容
+属性节点：标签内部的属性，比如<a href="xxxx"></a>中的链接属性href="xxxx"
+
+
+操作HTML:
+修改元素的内容
+	举例：
+	var mye = document.getElementById("con");
+	document.write(mye.innerHTML);			// 获取元素内容
+	mye.innerHTML = "<p>New text!</p>";	    // 修改元素内容(可以修改元素内部的HTML结构)
+    mye.innerText = 'New text!'             // 仅仅修改元素内部文本内容
+
+    
+修改元素样式
+	举例：
+	var mye = document.getElementById("con");
+	mye.style.color = "red";			// 修改字体颜色
+	mye.style.fontSize = "20px";			// 修改字体大小
+	mye.style.display = "none";			// 隐藏元素
+	mye.style.display = "block";			// 显示为块状元素
+
+
+
+
+

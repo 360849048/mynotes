@@ -1,0 +1,183 @@
+1.初始化工程目录
+	1.创建package.json文件
+		cnpm init（如果没特殊需求，想要快一点可以直接使用 npm init -y）
+	2.创建src文件夹和dist文件夹，分别用来存储源码和打包后的代码
+    
+    
+2.安装webpack（使用webpack4必须同时安装webpack和webpack-cli）
+	cnpm i webpack webpack-cli -D
+    
+    
+3.配置webpack
+	1.创建webpack.cnfig.js
+		推荐在项目的根目录下直接创建该文件，这样webpack在打包时候会自动识别该文件。否则需要在打包时指定文件路径
+        
+	2.配置entry和output
+		在webpack.config.js中，参考下面内容填写
+		/* webpack.config.js */
+		const path = require('path');
+		
+		module.exports = {
+			...
+			entry: './src/index.js',
+			output: {
+				filename: 'main.js',
+				path: path.resolve(__dirname, 'dist'),
+                publicPath: 'http://xxxx.com'       // 为所有资源文件引用的根路径。也可以单独在loader设置publicPath
+			}
+			...
+		}
+        
+	3.配置mode
+		在webpack.config.js中，参考下面内容填写
+		/* webpack.config.js */
+		...
+		module.exports = {
+			...
+			mode: 'development'
+			...
+		}
+        
+	4.配置模块解析规则
+		以解析scss文件为例，首先安装相关loader和依赖
+		cnpm i -D style-loader css-loader sass-loader node-sass
+		然后在webpack.config.js中，参考下面内容填写
+		module.exports = {
+			...
+			module: {
+				rules: [
+					test: /\.(sc|sa|c)ss$/,
+					use: [{
+					  loader: 'style-loader',
+					  options: {
+						sourceMap: true
+					  }
+					}, {
+					  loader: 'css-loader',
+					  options: {
+						sourceMap: true
+					  }
+					}, {
+					  loader: 'sass-loader',
+					  options: {
+						sourceMap: true
+					  }
+					}]
+				  }
+				]
+			}
+			...
+		}
+		说明：当解析某个module用到多个loader时，loader的使用顺序为从下到上，从右到左。比如use: ['style-loader', 'css-loader', 'sass-loader']，表示先用sass-loader解析模块，然后再用css-loader，最后使用style-loader。上面代码开启了sourceMap，用于开发环境下在浏览器中定位源码位置，模块解析顺序也是依次从最下面的sass-loader再css-loader，最后style-loader。
+        
+	5.使用插件，
+        插件的一般使用方法为，
+        module.exports = {
+            ...
+            plugins: [
+                new HtmlWebpackPlugin(
+                    template: './src/index.html',
+                    hash: true
+                )
+            ]
+            ...
+        }
+        
+        例如:
+            html-webpack-plugin和clean-webpack-plugin，实现html模板的自动创建和原先打包文件的清除功能
+            copy-webpack-plugin，实现assets文件的复制功能
+            mini-css-extract-plugin，实现css文件的单独打包（需要使用MiniCssExtractPlugin.loader代替style-loader）
+
+	6.使用webpack-dev-server
+		webpack-dev-server的常用配置如下：
+        module.exports = {
+            ...
+            devServer: {
+                contentBase: "./",//本地服务器所加载的页面所在的目录
+                historyApiFallback: true,//不跳转
+                host:'0.0.0.0',
+                port:7000,
+                hot:true,
+                inline: true,//实时刷新
+                hot:true,//Enable webpack's Hot Module Replacement feature
+                compress:true,//Enable gzip compression for everything served
+                overlay: true, //Shows a full-screen overlay in the browser
+                stats: "errors-only" ,//To show only errors in your bundle
+                open:true, //When open is enabled, the dev server will open the browser.
+                proxy: {
+                    "/api": {
+                        target: "http://localhost:3000",
+                        pathRewrite: {"^/api" : ""}
+                    }
+                },   //代理重定向 
+             }
+            ...
+        }
+            
+		 启用webpack-dev-server的命令为npx webpack-dev-server
+         
+    7.源码映射(source-map)
+        module.exports = {
+            ...
+            devtools: 'source-map', // '还可选其他下面注释的几个值'
+            ...
+        }
+        
+        * source-map                    会增加映射文件(*.map)，文件很大，可以映射的源码的行和列
+        * eval-source-map               不会产生单独的文件，仍然可以映射到源码的行和列
+        * cheap-module-source-map       会增加映射文件，但不具备调试功能，能定位到源码的行
+        * cheap-module-eval-source-map  不会产生单独的文件，能定位到源码的行
+            
+    8.实时打包
+        module.exports = {
+            ...
+            watch: true,
+            ...
+        }
+        
+        也可以使用npx webpack --watch
+    
+    9.设置模块解析规则
+        module.exports = {
+            ...
+            resolve: {
+                modules: [          // 设置模块查找目录    
+                    path.resolve('node_modules')
+                ], 
+                alias: {            // 别名，用来简化require时的模块名
+                    bootstrap: 'bootstrap/dist/css/bootstrap.css'
+                },
+                extension: [        // 当模块没写明后缀名时的匹配文件类型    
+                    '*', 
+                    '.js', 
+                    '.vue', 
+                    '.json'
+                ]
+            }
+            ...
+        }
+    10.在webpack.config.js中定义全局变量
+        const webpack = reuqire('webpack');
+        
+        module.exports = {
+            ...
+            plugins: [
+                new webpack.DefinePlugin({
+                    DEV: "'dev'"，    // JSON.stringify('dev') 效果一样
+                    FLAG: 'true'
+                }) 
+            ]
+            ...
+        }
+        
+        上面定义的变量dev即可
+    
+    
+4.打包
+	方法一：
+		npx webpack
+	方法二：
+		在package.json中配置script，比如
+			'start': 'webpack'
+		npm run start
+		

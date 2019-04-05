@@ -1,0 +1,280 @@
+* 解构赋值
+	* 数组的解构赋值
+		let [a, b] = [1, 2];
+		let [ , , z] = [1,2,3];     // z=3
+		let [x, y, z] = new Set(['a', 'b', 'c']);
+	* 默认值
+		let [foo = true, bar] = [undefined, false];      // foo = true  bar = false
+	* 对象的解构赋值
+		let {foo, bar} = {foo: 'a', bar: 'b'}
+		let {baz} = {foo: 'a', bar: 'b'}			// baz = undefined
+		let {foo: baz} = {foo: 'a', bar: 'b'}		// baz = 'a'
+		结论：对象的解构赋值是赋值给冒号右边的变量，{foo, bar} = {...}实际采用了ES6中对象的简写。
+	* 解构赋值的用途
+		* 交换变量的值  
+			[x, y] = [y, x];
+		* 从函数返回多个值    
+			foo = () => {return [1, 2, 3];}
+			let [a, b, c] = foo();
+		* 提取json数据
+		* 加载模块的指定方法（这个在Vue引入element-ui组件时候经常用）
+			import { Loading, Message } from 'element-ui'
+
+
+
+* 字符串扩展
+	* includes()		返回布尔值，是否找到参数字符串
+	* startswith()		返回布尔值，参数字符串是否在原字符串的头部
+	* endsWith()		返回布尔值，参数字符串是否在原字符串的尾部
+	
+	* repeat()			返回一个新字符串，将原字符串重复n次
+	
+	* 模板字符串
+		`In ES6, you can use template string as follows:
+			Hello, ${name}, it's a brand new way to create new string!
+			It's easy to use, just replace traditional ' or " as \`,
+		Try it now? 
+		`
+		模板字符串会保留里面的所有空格和回车，如果不想要换行，可以用trim方法消除
+			`
+				<div>test</div>
+			`.trim();
+
+
+* 展开运算符
+	例如：
+	function foo(a, b, c){
+		return a+b+c
+	}
+	* ES5使用apply方法将数据展开成多个参数
+		foo.apply(null, [1, 2, 3])
+	* ES6使用展开运算符
+		* 函数调用：
+			foo(...[1, 2, 3])
+		* 数组字面量
+			let arr1 = [1, 2, 3];
+			let arr2 = [...arr1, 4, 5];	// [1, 2, 3, 4, 5]
+			let arr3 = ['a', 'b'];
+			let arr4 = ['c', 'd'];
+			arr3.push(...arr4);			// ['a', 'b', 'c', 'd']
+		* 解构赋值
+			let [arg1, arg2, ...arg3] = [1, 2, 3, 4]
+			arg1		// 1
+			arg2		// 2
+			arg3		// [3, 4]
+		* 类数组对象变成数组
+			let list = document.getElementsByTagName('div');
+			let arr = [...list];
+		展开运算符的应用
+			* 复制数组
+				const a1 = [1,2];
+				// 写法一
+				const a2 = [...a1];
+				// 写法二
+				const [...a2] = a1;
+			* 合并数组
+				const a1 = ['a', 'b'];
+				const a2 = ['c', 'd'];
+				const a3 = [...a1, ...a2];
+
+* 常量的写法 
+    * ES5中常量的写法
+        Object.defineProperty(window, "PI2", {
+            value: 3.1415926,
+            writable: false
+        })
+    * ES6中常量的写法
+        const PI = 3.1415926
+
+* 作用域
+    * ES6有块作用域，只需要使用{ }即可对变量进行隔离
+    * ES5没有快作用于，如果需要进行变量隔离，只能使用立即执行函数（(function()){}()）
+
+* class的使用
+	* ES5中生成对象的方法是通过构造函数，例如：
+		function Point(x, y) {
+			this.x = x;
+			this.y = y;
+		}
+		Point.prototype.toString = function() {
+			return '(' + this.x + this.y + ')';
+		};
+		
+		var p = new Point(1, 2);
+	* ES6使用class关键字定义类，以上代码可以在ES6中改写为：
+		class Point {
+			constructor(x, y) {
+				this.x = x;
+				this.y = y;
+			}
+			toString() {
+				return '(' + this.x + this.y + ')';
+			}
+		}
+		let p = new Point(1, 2);
+		注意，在class内部的方法之间不需要用逗号隔开。
+		constructor方法是类的默认方法，通过new命令生成实例对象时，自动调用该方法，如果没有显式定义，一个空的constructor方法会被默认添加。
+
+
+* ES6中的模板字符串 `<em>Hello ${name}</em>`
+	* ES5拼接字符串的方式
+		$('#result').append(
+		  'There are <b>' + basket.count + '</b> ' +
+		  'items in your basket, ' +
+		  '<em>' + basket.onSale +
+		  '</em> are on sale!'
+		);
+	* ES6使用模板字符串拼接字符串
+		$('#result').append(`
+		  There are <b>${basket.count}</b> items
+		   in your basket, <em>${basket.onSale}</em>
+		  are on sale!
+		`);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

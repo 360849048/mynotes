@@ -1,0 +1,68 @@
+*通过加载状态事件制作进度条
+    document.onreadystatechange     页面加载状态改变时的事件
+    
+    
+    document.readyState             返回当前文档的状态
+        1. uninitialized        还未开始载入
+        2. loading              载入中
+        3. interactive          已载入，文档与用户可以开始交互
+        4. complete             载入完成
+    
+    <script src='./js/jquery.js'></script>
+    <script>
+        document.onreadystatechange = function () {
+            console.log(document.readyState);
+            
+            if (document.readState == "complete") {
+                $(".loading").fadeOut();
+            }
+        }
+    </script>
+
+*在body下各个代码段之间插入<script></script>标签，根据代码从上到下执行顺序，动态修改精度条css属性。
+ 
+    <style>
+        .loading {
+            position: fixed;
+            width: 0;
+            height: 5px;
+            left: 0;
+            top: 0;
+            height: 0;
+            background: red;
+            z-index: 100;
+        }
+    </style>
+    
+    <body>
+        <div class='loading'></div>
+        
+        <section>HTML code goes here</section>
+        <script>
+            $('.loading').animate({width: '25%'})
+        </script>
+        
+        <section>HTML code goes here</section>
+        <script>
+            $('.loading').animate({width: '50%'})
+        </script>
+        
+        <section>HTML code goes here</section>
+        <script>
+            $('.loading').animate({width: '75%'})
+        </script>
+        
+        <section>HTML code goes here</section>
+        <script>
+            $('.loading').animate({width: '100%'})
+        </script>
+        
+    </body>
+
+
+*实时获取加载数据的进度条    
+    
+
+补充 CSS进度条加单动画
+    www.loading.io                  提供进度条动画的网站，生成SVG/CSS/GIF
+    https://autoprefixer.github.io  提供CSS兼容性写法的转换网站

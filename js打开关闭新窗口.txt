@@ -1,0 +1,37 @@
+********************************************************************************************
+打开新窗口
+window.open([URL], [窗口名称], [参数字符串])
+URL: 		可选参数，在窗口中显示网页的网址或路径。如果省略该参数或者该参数值是空字符串，那么窗口就不显示任何文档。
+
+窗口名称: 	可选参数，被打开窗口的显示方式，参数值如下：
+		"_blank": 在新窗口中显示目标网页；
+		"_self" : 在当前窗口中显示目标网页；
+		"_top"  : 框架网页中在上部窗口中显示目标网页。
+
+参数字符串：	可选参数，设置窗口参数，各个参数用逗号隔开
+		参数		值		说明
+		top 		Number		窗口顶部离开屏幕顶部的像素数
+		left		Number		窗口左端
+		width		Number		窗口的高度
+		height		Number		窗口的宽度
+		menubar		yes,no		窗口有没有菜单
+		toolbar		yes,no		窗口有没有工具条
+		scrollbar 	yes,no		窗口有没有滚动条
+		status		yes,no		窗口有没有状态栏
+		
+window.open("www.sina.com", 
+	    "_blank", 
+	    "top=200, left=500, width=300, height=200, menubar=no, toolbar=no, status=no, scrollbars=yes");
+
+注意：参数字符串尽量写完整（width和height只写其中一个无效），最终运行结果考虑浏览器兼容问题。
+
+********************************************************************************************
+关闭窗口
+window.close()		// 关闭本窗口
+或者
+<对象名称>.close()	// 关闭指定窗口
+
+<script type="text/javascript">
+var mywnd = window.open("http://www.imooc.com");
+mywnd.close();
+</script>

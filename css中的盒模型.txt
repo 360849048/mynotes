@@ -1,0 +1,4 @@
+* box-sizing
+	* content-box(默认)：	height,width属性不包括padding和border的尺寸
+	* border-box：			height,width属性包括了padding以及border的尺寸
+	* inherit：				规定从父元素继承box-sizing属性

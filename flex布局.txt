@@ -1,0 +1,30 @@
+CSS中的flex布局
+	* 任何一个容器都可以指定为flex布局，成为一个“容器”，其内部子元素自动成为容器成员，称为“项目”；
+	* 容器默认存在两根轴：水平的主轴和垂直的交叉轴；
+	* flex会使内部子元素的float特性失效。
+
+
+
+设置在容器上的属性
+	* flex-direction	项目的排列方向。注意这会改变主轴的方向
+		row(默认) | row-reverse | column | column-reverse
+	* flex-wrap			项目在同一轴线上排列不下时如何换行。
+		nowrap(默认，不换行) | wrap(换行在第一行上方) | wrap-reverse(换行在第一行下方)
+	* flex-flow			flex-flow是flex-direction和flex-wrap的简写形式
+	
+	* justify-content	项目在主轴上的对齐方式
+		flex-start(默认，左对齐) | flex-end | center | space-between | space-around
+	* align-items		项目在交叉轴对齐方式
+		flex-start(顶部对齐) | flex-end | center | baseline(第一行文字对齐) | stretch(默认，拉伸撑满)
+	
+	* align-content		定义了多条主轴时的各轴对齐方式，只有1条主轴时无效
+
+
+设置在项目上的属性
+	* order				定义项目的排列顺序，默认值为0，越小越靠前
+	* flex-grow			放大比例，默认值为0，不放大
+	* flex-shrink		缩小比例，默认值为1，空间不足时会缩小
+	* flex-basis		占据主轴的空间，默认值为auto，这里可以设置为一个定值如200px
+	* flex				flex是flex-grow、flex-shrink和flex-basis的简写形式，有两个快捷值auto(1 1 auto)和none(0 0 auto)
+	* align-self		允许覆盖容器属性：align-items
+		auto(默认) | flex-start | flex-end | center | baseline | stretch

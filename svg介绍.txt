@@ -1,0 +1,217 @@
+SVG是可伸缩矢量图形(Scalable Vector Graphics)，使用XML格式定义图形，是万维网联盟的标准。
+
+SVG可以单独作为.svg文件保存，例如：
+	<?xml version="1.0" standalone="no"?>
+	<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+	  <circle cx="100" cy="50" r="40" stroke="black"
+	  stroke-width="2" fill="red" />
+	</svg>
+
+SVG代码可以直接嵌入到HTML页面中，例如：
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+		<circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red" />
+	</svg>
+也可以直接在HTML中链接外部SVG文件，例如：
+	<a href="circle1.svg">View SVG file</a>
+	
+SVG的基本图形
+	* 矩形 <rect>
+		x、y 左上角的坐标
+		width、height 矩形的宽和高
+		rx、ry 圆角值
+	* 圆形 <circle>
+		cx、cy 圆心的坐标
+		r 半径
+	* 椭圆 <ellipse>
+		cx、cy 圆心的坐标
+		rx、ry 椭圆的半径
+	* 线 <line>
+		x1、y1 起点坐标
+		x2、y2 终点坐标
+	* 折线 <polyline>
+		points "x1,y1 x2,y2, x3,y3 ..."
+	* 多边形 <polygon>
+		points "x1,y1 x2,y2, x3,y3 ..." 与polyline不同的是，polygon会将首位坐标连接起来
+	* 文字 <text>这里写文字</text>
+		x、y文字左下角的坐标
+	** 路径 <path> (可以绘制任意图形)
+        M = moveto
+        L = lineto
+        H = horizontal lineto
+        V = vertical lineto
+        Z = closepath
+            解析：
+            M
+                移动到的点的x轴和y轴的坐标  M x y
+            L
+                需要两个参数，分别是一个点的x轴和y轴坐标，L命令将会在当前位置和新位置（L前面画笔所在的点）之间画一条线段  M x y
+            H
+                绘制平行线   H x
+            V
+                绘制垂直线   V y
+            Z
+                从当前点画一条直线到路径的起点 Z
+        C = curveto
+        S = smooth curveto
+        Q = quadratic Belzier curve
+        T = smooth quadratic Belzier curveto
+        A = elliptical Arc
+            解析：
+            C
+                三次贝赛尔曲线 C x1 y1, x2 y2, x y
+                三次贝塞尔曲线类似于PS中的钢笔功能，三次贝塞尔曲线实际由起始点加上这边的3个点来确定一段曲线。
+			S
+				简写的三次贝塞尔曲线	S x2 y2, x y
+				这里相当于省略了起始控制点x1 y1。如果S命令跟在C命令或S命令之后，x1 y1相当于原先C命令或S命令中x2 y2相对于x y的对称点；如果S命令单独使用，此时省略的x1和y1与x2 y2重合。
+            Q
+                二次贝塞尔曲线 Q x1 y1, x y
+                二次贝塞尔曲线比三次贝塞尔曲线简单，只需要一个控制点来确定起点和终点的曲线斜率。
+			T
+				简写的二次贝塞尔曲线 T x y
+				与S命令类似，简写的二次贝塞尔曲线省略了x1 y1，它会根据上一个Q命令或T命令中定义的x1 y1对称出新的控制点x1 y1。如果T命令之前没有Q或T命令，只能生成一条直线。
+            A
+                弧形  rx ry x-axis-rotation large-arc-flag sweep-flag x y
+                rx和ry表示x轴和y轴的半径
+                x-axis-rotation表示弧形的旋转情况
+                large-arc-flag代表角度大小
+                sweep-flag
+         
+        注释：以上所有命令均允许小写字母。大写表示绝对定位，小写表示相对定位(以前一个点位置为基准)。
+SVG的基本属性
+	* fill
+		填充颜色
+	* stroke
+		描边颜色
+	* storke-width
+		描边宽度
+	* transform
+		坐标的变换，例如transform=rotate(30)
+
+
+SVG的基本操作API
+	* 创建图形
+		document.createElementNS(ns, tagName)
+	* 添加图形
+		document.appendChild(childElement)
+	* 设置/获取属性
+		element.setAttribute(name, value)
+		element.getAttribute(name)
+
+SVG中的坐标系
+    * 用户坐标系（User Coordinate，又称原始坐标系）
+        它以屏幕的左上角为原点，向右为x正方向，向下为y正方向，从0到无穷大）
+    * 自身坐标系（Current Coordinate）
+        每个图形（或图形分组）与生俱来的坐标系，由前驱坐标系经过定义的变换得到
+    * 前驱坐标系（Previous Coordinate）
+        从父容器继承过来的坐标系，即父容器的自身坐标系
+    * 参考坐标系（Reference Coordinate）
+
+SVG中的transform属性
+    语法：
+       * rotate(deg)
+       * translate(x, y)
+       * scale(sx, sy)
+       * matrix(a, b, c, d, e, f)
+
+SVG实现线条动画
+	.path {
+	  stroke-dasharray: 1000;
+	  stroke-dashoffset: 1000;
+	  animation: dash 5s linear forwards;
+	}
+
+	@keyframes dash {
+	  to {
+	    stroke-dashoffset: 0;
+	  }
+	}
+	说明：
+		stroke-dashArray用来描述虚线，可选值为：none <dasharray> inherit。
+		none表示不是虚线；
+		<dasharray>为一个逗号或空格分隔的数值列表，表示各个虚线的长度，可以是固定长度，也可以是百分比值。
+		inherit表示继承。
+		示例：
+		stroke-dashArray: 20			虚线长度和间距都是20
+		stroke-dashArray: 20,10			虚线长度20，间距10
+		stroke-dashArray: 20,5,5,10		第一个虚线长度20，第一个间距5，第二个虚线长度5，第二个间距10
+		
+		stroke-dashOffset描述虚线的起始偏移量，可以设置为百分比或固定值
+	stroke-dasharray应该大于等于实际线条的长度，最好是刚好等于。可以尝试使用百分比设置长度。
+	另外在js中获取线条长度的方法是：
+	var path = document.querySelector('path');
+	var length = path.getTotalLength();
+	
+	例如在js中修改某个dom元素的css样式，直接使用dom.style.strokeDasharray = dom.getTotalLength(); 
+
+svg线性渐变 <linearGradient>
+    <linearGradient>元素用来定义线性渐变
+    <linearGradient>标签必须嵌套在<defs>内部
+    例如：
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+          <defs>
+            <linearGradient id='grad1' x1='0' y1='100%' x2='100%' y2='0'>
+              <stop offset="0" stop-color="hsla(0, 80%, 50%, .8)" />
+              <stop offset="50%" stop-color="hsla(120, 80%, 50%, .8)" />
+              <stop offset="100%" stop-color="hsla(240, 80%, 50%, .8)" />
+            </linearGradient>
+          </defs>
+          <path class="draw" d="M200 200 Q250 100 300 200 T400 200 T300 200 T200 200" fill="transparent" stroke="url(#grad1)" />
+        </svg>
+        说明：
+            <linearGradient>的属性x1, y1, x2, y2构成一条直线，它的值建议用百分比来表示。用来定义渐变的方向。
+            <stop>元素用来定义渐变的节点，其属性stop-color用来定义颜色。
+            也可以在css样式中定义stroke: 'url(#id)'或js中修改颜色，效果一样。
+            
+            
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

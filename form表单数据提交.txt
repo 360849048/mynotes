@@ -1,0 +1,2 @@
+* 表单数据如果要通过<form action='/foo'>这样的方式提交到后台，必须给每个input标签添加一个name属性
+* 通过<form action='/foo' method='post'>方式不仅会提交表单数据，而且会跳转页面
