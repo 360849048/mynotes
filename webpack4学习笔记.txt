@@ -156,6 +156,7 @@
             }
             ...
         }
+        
     10.在webpack.config.js中定义全局变量
         const webpack = reuqire('webpack');
         
@@ -169,9 +170,58 @@
             ]
             ...
         }
+        上面定义的变量dev即可在所有js模块中进行使用
         
-        上面定义的变量dev即可
+    11.抽离公共代码（多页面应用打包时候抽离公共代码）
+        module.exports = {
+            ...
+            optimization: {
+                splitChunks: {  // 分割代码块
+                    cacheGroups: {  // 缓存组
+                        common: {   // 公共的模块（自己写的模块）
+                            chunks: 'initial',
+                            minSize: 0,      // 最小公共代码尺寸
+                            minChunks: 2,    // 最少的引用次数
+                        }
+                        vendor: {   // 用来抽离第三方库代码，比如jQuery
+                            priority: 1,    // 设置优先级，防止代码被抽离到common中
+                            test: /node_modules/,
+                            chunks: 'initial',
+                            miniSize: 0,
+                            minChunks: 2
+                        }
+                    }
+                }
+            }
+            ...
+        }
     
+    12.懒加载，动态加载文件。Vue懒加载就是通过这个实现的。
+        例如，在业务代码中引用a.js可以参照以下写法。
+            import('./a.js').then(data => { es6草案中，jsonp实现动态加载文件
+                console.log(a);
+            })
+        在webpack.config.js中需要配置babel-loader，否则不能支持该写法
+        module.exports = {
+            ...
+            module: {
+                rules: [
+                    ...
+                    {
+                        test: /\.js$/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: ['@babel/preset-env'],
+                                plugins: ['@babel/plugin-syntax-dynamic-import']
+                            }
+                        }                        
+                    }
+                    ...
+                ]
+            }
+            ...
+        }
     
 4.打包
 	方法一：
