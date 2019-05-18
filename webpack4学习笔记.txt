@@ -9,7 +9,7 @@
     
     
 3.配置webpack
-	1.创建webpack.cnfig.js
+	1.创建webpack.config.js
 		推荐在项目的根目录下直接创建该文件，这样webpack在打包时候会自动识别该文件。否则需要在打包时指定文件路径
         
 	2.配置entry和output
@@ -75,10 +75,10 @@
         module.exports = {
             ...
             plugins: [
-                new HtmlWebpackPlugin(
+                new HtmlWebpackPlugin({
                     template: './src/index.html',
                     hash: true
-                )
+                })
             ]
             ...
         }

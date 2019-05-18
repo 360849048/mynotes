@@ -9,7 +9,7 @@ CSS中的flex布局
 	* flex-direction	项目的排列方向。注意这会改变主轴的方向
 		row(默认) | row-reverse | column | column-reverse
 	* flex-wrap			项目在同一轴线上排列不下时如何换行。
-		nowrap(默认，不换行) | wrap(换行在第一行上方) | wrap-reverse(换行在第一行下方)
+		nowrap(默认，不换行，这样可能会压缩项目尺寸) | wrap(换行，第一行上方) | wrap-reverse(换行，第一行下方)
 	* flex-flow			flex-flow是flex-direction和flex-wrap的简写形式
 	
 	* justify-content	项目在主轴上的对齐方式
