@@ -1,0 +1,78 @@
+概念术语
+	网格容器：
+		元素应用display:grid，它是其他所有网格的父元素。例如
+	网格项：
+		网格容器的子元素，注意子元素的子元素不算网格项
+	网格线：
+		网格线是每个网格的分界线，它包括行网格线和列网格线
+	网格轨道：
+		两个相邻网格线之间为网格轨道，可以认为是某一行或者某一列。
+	网格单元：
+		两个相邻的行网格线与连个相邻的列网格线组成一个网格单元。注意区分网格项与网格单元。网格单元是grid布局中最小的单位，一个网格项可能由一个或多个网格单元组成。
+	网格区域：
+		网格区域由任意数量的网格单元组成。
+
+
+CSS属性
+	设置在网格容器上的属性
+		display
+			grid(常用) | inline-grid | subgrid
+
+		grid-template-columns
+		grid-template-rows
+			<track-size> ... | <line-name> <track-size>...
+			举例：
+				grid-template-columns: 40px auto 50px;
+				grid-template-rows: [row1-start] 10% [row1-end row2-start] 20% repeat(3, 1fr);
+
+		grid-template-areas
+			通过网格项的grid-area属性值（名称），来定义网格区域
+			举例：
+				.item1 {
+					grid-area: header;
+				}
+				.item2 {
+					grid-area: main;
+				}
+				.item3 {
+					grid-area: sidebar;
+				}
+				.item4 {
+					gird-area: footer;
+				}
+				.container {
+					display: grid;
+					grid-template-columns: repeat(4, 50px);
+					grid-template-rows: auto;
+					grid-template-area: "header header header header"
+										"main main . sidebar"
+										"footer footer footer footer"
+				}
+
+		grid-column-gap
+		grid-row-gap
+			<line-size>
+			设置相邻网格轨道之间的间距
+		grid-gap
+			<grid-row-gap> <grid-column-gap>
+
+		justify-items
+			start | end | center | stretch(默认)
+			设置网格内部内容的水平对齐方式
+		align-items
+			start | end | center | stretch
+			设置网格内部内容的垂直对齐方式
+
+		justify-content
+			start | end | center | stretch | space-around | space-between | space-evenly
+			设置网格的对齐方式
+			说明：
+				space-around: 网格两边边距相等，网格项之间间隔是单侧的2倍
+				space-between: 两边对齐，网格项之间间隔相等
+				space-evenly: 网格项间隔相等
+		align-content
+		grid-auto-columns
+		grid-auto-rows
+		grid-auto-flow
+		grid
+	
