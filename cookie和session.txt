@@ -5,15 +5,29 @@ Cookie是用来解决HTTP协议无状态缺陷的一种补充机制，存储在�
 cookie失效分为2种：
 	1. 设置失效时间，这种cookie会保存在硬盘中。保存在硬盘上的cookie可以在不同的浏览器进程间共享；
 	2. 不设置失效时间，这种cookie保存在内存中，关闭浏览器就会失效，对于共享这种cookie，不同的浏览器有不同的处理方式。（也被称为会话cookie）
-
+	
+	
 Session的作用和cookie类似，通常和cookie结合使用
-	使用session和cookie通常有两种方案
+	使用session通常有两种方案
 		*session存储在服务端：通过cookie存储一个session_id，具体数据保存在服务端的session中。如果用户已经登录，服务器会在cookie中保存一个session_id，下次请求的时候，会把该session_id携带上来，服务器根据session_id在session库中获取用户的session数据，就能知道该用户是谁，以及之前保存的一些状态信息。这种方式的专业术语叫做server side session
 		*session存储在客户端：将session数据加密，然后存储在cookie中。这种方式的专业术语叫做client side session。flask采用这种方式
 		
 Cookie与session的区别
 	Cookie往往保存了用户的所有信息（即客户端保存了用户所有信息），存在更多的安全隐患，因为JavaScript通常可以操作cookie，可以修改或者清除用户信息，达到伪造的目的。而session机制是由服务器根据用户生成一串难以伪造的唯一的sessionid，这串sessionid通常由客户通过cookie进行保存传递，服务器根据每次http请求携带的sessionid，查询并得到用户所有信息。
 
+安全地使用cookie记录用户当前登录状态
+	使用对账号，IP信息等其他信息，使用一个随机数作为salt进行hash计算得到一串签名，然后以user=账号密码.签名的格式作为cookie返回客户端。验证登录状态只需要重新计算hash即可。
+	如果要实现修改密码后退出登录状态，可以将密码也作为一部分混入hash计算。
+	由于混入了IP等信息进行hash计算，一般就不支持多个设备登录了。
+    缺点：上面的方法在每次验证登录状态时，需要查询数据库。
+    为了避免每次查询数据库，可以采用下面一种方法：
+    将用户账号保存在名为account的cookie中，然后将账号使用hmac算法加密后保存到名为ssid的cookie中。验证时只需要将cookie中的账号进行hmac计算，得到的结果和ssid一致则验证成功。
+    
+
+怎么退出登录
+	不建议在前端使用JavaScript删除cookie来退出登录状态，尤其是cookie设置为httponly时，JavaScript根本无法操作cookie。正确的做法是后端对cookie设置一个更早的过期时间，让浏览器自动删除登录状态相关的cookie。
+	
+	
 		
 使用JavaScript创建或修改cookie：
 	*document.cookie = "username=John";

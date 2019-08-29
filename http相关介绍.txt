@@ -1,22 +1,57 @@
+https://www.cnblogs.com/yanze/p/7766103.html
+
 HTTP请求头信息：
     Accept: 浏览器能够处理的内容类型(MIME类型）
+        Accept: application/json, text/javascript, */*; q=0.01
+        解释：*/*表示接受任何MIME类型，q(q-factor品质因数)为权重，代表对某种类型的喜好程度，默认为1，以','分割。
+        相当于Accept: application/json; q=1, text/javascript; q=1, */*; q=0.01，客户端更倾向接收json和javascript文件。
+        
     Accept-Encoding: 浏览器能够处理的压缩编码
     Accept-Language: 浏览器希望的语言种类，当服务器能够提供一种以上的语言版本时用到。
     Accept-Charset: 浏览器能够显示的字符集
     Connection: 浏览器与服务器之间的连接类型
     Cookie： 当前页面设置的所有cookie
-    Host: 发出请求的页面所在的区域
-    Referer: 发出请求的页面的URL
+    Host: 客户端指定自己想访问的web服务器的域名/IP地址和端口号，任何类型的请求中，request都会包含这个header信息
+    Origin: 说明请求从哪里发起，仅包括协议、域名/IP地址和端口号。Origin这个参数仅存在于POST请求和跨域请求中。
+    Referer: 发出请求的页面的URL，它用于所有请求。假设我们当前处于A网站下的某个页面：http://www.exampleA.com/some_page_of_a.html下，该页面中有个链接是链到了B网站的某个页面：http://www.exampleB.com/some_page_of_b.html，那么当点击那个链接（或者其他方法），向B网站发起请求时，HTTP请求头中将包含如下字段：referrer:http://www.exampleA.com/some_page_of_a.html 
     User-Agent: 浏览器的用户代理字符串
     Content-Length: 请求消息正文的长度
+    Cache-Control: 控制HTTP缓存
+        *no-cache: 告知（代理）服务器不直接使用缓存，需要向原服务器发起请求。如果请求头中设置了Cache-Control为no-cache，表示不管服务器有没有设置Cache-Control，都必须重新去获取。
+        *no-store: 所有内容都不会被保存到缓存或者Internet临时文件中
+        *max-age=delta-seconds: 告知服务器客户端希望接收一个存在时间（Age）不大于delta-seconds秒的资源。如果在请求头中设置了max-age=0，表示不管服务器怎么设置Cache-Control，在重新获取资之前，都会先校验ETag/Last-Modified
+        *max-stale[=delta-seconds]: 告知（代理）服务器客户端愿意接收一个超过缓存时间的资源，若定义delta-seconds则为delta-seconds秒，若没有则为任意超出的时间
+        *min-fresh=delta-seconds: 告知（代理）服务器客户端希望接收一个在小鱼delta-seconds秒内被更新过的资源
+        *no-transform: 告知（代理）服务器客户端希望获取实体数据没有被转换（比如压缩）过的资源
+        *only-if-cached: 告知（代理）服务器客户端希望获取缓存的内容（若有），而不用向原服务器发去请求
+        *cache-extension: 自定义扩展至，若服务器不识别该值将被忽略掉
+   
+    Referer和Origin的对比
+        Referer可能的用处：1.防止盗链；2.防止恶意请求。
+        Referer会向外部网站泄漏URL中附带的数据。
+        往往在跨域请求时才会出现，但它不会有Referer的问题，因为它只携带了协议+域名+端口号
+   
    
 HTTP响应头信息：
     Date: 消息发送的时间，时间描述格式由rfc822定义
     Server: 服务器名称
     Connection: 浏览器与服务器之间的连接类型
     Content-Type: 表示响应的文档属于什么MIME类型
-    Cache-Control: 控制HTTP缓存
-
+    Cache-Control: 控制HTTP缓存（注意请求和响应中都可能有这个头信息）
+        *public: 表明任何情况下都得缓存该资源（即使是需要HTTP认证的资源）
+        *private[="field-name"]: 表明返回报文中全部或部分资源（若指定了field-name则为field-name的字段数据）仅开放给某些用户（服务器指定的share-user，如代理服务器）做缓存使用，其他用户不能缓存这些数据
+        *no-cache: 不直接使用缓存，要向服务器发起（新鲜度校验）请求
+        *no-store: 所有内容都不会被保存到缓存或者Internet临时文件中
+        *no-transform: 告知客户端缓存文件时不得对实体数据做任何改变
+        *only-if-cached: 告知（代理）服务器客户端希望获取缓存的内容（若有），而不用向原服务器发去请求
+        *must-revalidate: 当前资源一定是向原服务器发去验证请求，若请求失败会返回504（而非代理服务器上的缓存）
+        *proxy-revalidate: 与must-revalidate类似，但仅能应用于共享缓存（如代理）
+        *max-age=delta-seconds: 告知客户端该资源在delta-seconds秒内是新鲜的，无需向服务器发请求
+        *s-maxage=delta-seconds: 同max-age，但仅应用于共享缓存（如代理）
+        *cache-extension: 自定义扩展至，若服务器不识别该值将被忽略掉
+        
+        no-cache与max-age=0的区别：
+            no-cache并不是表示无缓存，而是指使用缓存一定要先经过验证
     
     
     
