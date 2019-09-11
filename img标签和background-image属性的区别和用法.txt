@@ -1,0 +1,36 @@
+* img属于html标签，background-image属于css属性
+	img作为dom对象可以很方便的进行js操作，
+	
+* img随html加载，background-image随css加载。因此img可能会导致之后的html结构加载，但background-image会在整体html都加载完之后才开始加载。
+
+* img更符合语义化，且img标签有alt属性，一定程度上利于SEO。但是如果图片区域必须和预留空间大小一致，否则会导致图片拉伸或被压缩。
+
+
+background的常用属性介绍：
+	background-color(CSS1)
+		使用某种颜色填充背景，默认值是transparent。
+		用法如：
+			background-color: #ccc;
+			background-color: rgab(236, 219, 156, .8);
+	background-imgage(CSS1)
+		使用一个或多个背景图像，默认值是none。默认情况下，background-image放置在元素的左上角(background-position: left top)，并且重复垂直和水平方向(background-repeat: repeat)。
+		用法如：
+			单个背景图像 background-image: url(./img/paper.gif);
+			多个背景图像 background-image: url(./img/paper.gif), url(./img/flower.gif)
+	background-position(css1)
+		设置背景图像的起始位置，默认值是0% 0%。可以设置为百分号，left top或者px等单位
+		用法如：
+			background-position: left center;
+			background-position: 30% 30%;
+			background-position: 10rem 10rem;
+	background-repeat(CSS1)
+		设置如何平铺background-image属性，默认值是repeat。可以设置为no-reapeat，repeat-x，repeat-y。
+		用法如：
+			background-repeat: no-repeat;
+	background-attachment(CSS1)
+		设置背景图像是否固定或者随着页面的其余部分滚动。默认值是scroll，可以设置为fixed
+	background-size(CSS3)
+		设置背景图片大小，默认值为auto。可以设置为百分比，px等，也可以设置为cover(使得背景正好覆盖容器，图片可能会被裁切)何contain(使得容器正好容纳背景，图片可能无法完全覆盖容器)。
+		用法如：
+			background-size: 100% 80%;   注意第一个为宽度，第二个为高度，如果只设置了宽，那么高自动为auto。
+			background-size: cover

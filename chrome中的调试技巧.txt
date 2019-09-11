@@ -1,0 +1,22 @@
+* DOM打断点
+    在Elements标签页中，可以对页面中的DOM进行断点调试。其中包括三种断点方式，分别对应三种JS操作DOM的事件
+        * subtree modifications
+        * attribute modifications
+        * node removal
+
+* 可视化调节CSS常用样式
+    包括text-shadow、box-shadow、color和background-color。另外还可以调节动画等。
+
+* js中的log技巧
+    console对象包括多个实用方法，包括
+        console.log    普通打印一条信息
+        console.warn   打印警告，前面有一个黄色叹号
+        console.err    打印错误，前面有一个红色叉叉
+        console.table  以表格形式信息，常用来打印json数据以便查看
+        console.group  打印信息组，首先用console.group，后面的数据用console.info
+    console可以打印带有样式的信息，比如console.log("%c这是一条不一样的信息", "color: red")，样式的描述和CSS一致。
+    console可以自带时间戳，可以用来监控代码执行时间。用法如：
+        console.time();
+        foo();
+        console.timeEnd();
+        // default: 0.004ms

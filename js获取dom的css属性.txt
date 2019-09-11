@@ -1,0 +1,10 @@
+* getComputedStyle
+    获取某个元素最终使用的css属性值。
+    用法：
+        window.getComputedStyle(dom, null).height;
+        
+* style
+    获取某个元素style属性中的css样式，但是通常获取到的是空值。
+    常用来给元素赋予新的css样式
+    用法：
+        dom.style.height = '200px';
