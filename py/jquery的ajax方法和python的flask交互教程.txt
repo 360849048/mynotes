@@ -1,0 +1,110 @@
+https://blog.csdn.net/github_38854366/article/details/78400978
+
+
+
+<form>标签下的<input>、<textarea>标签必须带有name属性才能被form捕获提交。
+POST方法提交时用request.form来获取，但是GET方法需要使用request.args来获取。
+
+
+
+*********************************************************
+前端数据的发送与接收
+
+    *GET请求
+        var data = {
+            "name": "test",
+            "age": 1
+        };
+        $.ajax({
+            type: "GET",
+            url: /your/url/,
+            data: data,  // 最终都会被转换为查询字符串跟在url后面： /your/url/?name=test&age=1
+            dataType: 'json',   // 这里希望服务器返回的数据格式是Json
+            success: function(data){
+                // 这里的data参数传递的就是从服务器返回的json数据
+            },
+            error: function(xhr, type){
+            }
+        });
+
+    *POST请求
+        var data = {}; 
+        //   如果页面没有表单，只有input框，请求也只会发送这些值，那么可以直接获取到data中
+        data['name'] = $('name').val();
+        // 如果页面中有表单，那么可以利用jquery中的serialize()方法直接获取表单的全部数据
+        data = $('#form1').serialize();
+        
+        $.ajax({
+            type: 'POST',
+            url: /your/url/,
+            data: data,
+            dataType: 'json',
+            success: function(data){
+                // 这里的data参数传递的就是从服务器返回的json数据
+            },
+            error: function(xhr, type){
+            }
+        });
+        
+    注意：
+        A) 参数dataType: 期望的服务器响应的数据类型，可以是null, xml, script, json
+        B) 请求中的Content-Type默认是Content-Type:application/x-www-form-urlencoded，所以参数都会被编码为name=xx&age=1这种格式，提交到后端，后端会当做表单数据处理
+
+*********************************************************
+
+
+
+后端数据接收和返回
+
+1. 接收GET请求数据
+    name = request.args.get('name')
+    age = int(request.args.get('age'))
+   
+2. 接收POST请求数据
+        接收表单数据
+            name = request.form.get('name')
+            age = int(request.form.get('age'))
+        接收json数据
+            data = request.get_json()
+        
+        如果前端提交的数据后端能不能正确识别，可以使用request.get_data()接收数据
+
+3. 响应请求
+    
+    from flask import jsonify
+    
+    return jsonify({'ok': True})
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

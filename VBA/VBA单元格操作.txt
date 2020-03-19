@@ -1,0 +1,93 @@
+* 单元格和他的朋友们    
+    [A1].Select             选中A1单元格，但是这是固定写死的办法
+    Cells(2, 3).Select      选中B3单元格，但是只能选中1个单元格
+    Range("A1").Select      适用性最广的方法
+    
+    Range("A1").Value = 1   为单元格赋值（Range("A1") = 1 也能赋值，因为Value是单元格对象的默认属性）
+    
+    Range("A1").Offset(2, 3)    获取D3单元格
+    Range("A65536").End(xlUp)获取最后一行的第一列单元格，65536是xls的最后一行单元格，这里只需要保证这个值足够大就可以获取到最后一个有效的单元格，
+        Range("A65536").End(xlUp).Row   获取单元格的有效行数，这个非常有用
+        Range("A65536").End(xlUp).Offset(1, 0)  在最后一行添加数据，这个操作非常实用
+    
+    Range("A1").Resize(1, 3)    获取A1:A3单元格
+    Range("A1").EntireRow       获取A1整行
+    
+    
+    
+* 单元格对象常用操作
+    Range("A1").Copy    单元格复制，可以是复制整个区域，使用方法如：Range("a1").EntireRow.Copy Destination:=Range("a5")
+    Range("A1").ClearContents   清除单元格内容
+    
+
+Sub rollback()
+
+    ' 该方法用来删除除Sheet1之外的所有表
+    Dim i As Integer
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    If Sheets.Count > 1 Then
+        For i = Sheets.Count To 2 Step -1
+            Sheets(i).Delete
+        Next
+    End If
+    
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
+End Sub
+    
+
+Sub sort()
+    
+    ' 该方法用来给Sheet1进行按列拆分成表
+    
+    Dim max_row, col_to_sort As Integer
+    Dim i, j As Integer
+    Dim sheet_existed As Boolean
+    Dim sheet_name As String
+    
+
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
+    col_to_sort = InputBox("请输入需要分组的列，比如2")
+    max_row = Sheet1.Range("a65535").End(xlUp).Row
+    
+    Call rollback
+    
+    If col_to_sort <= Sheet1.Range("a1").End(xlToRight).Column Then
+        For i = 2 To max_row
+            sheet_name = Sheet1.Cells(i, col_to_sort)
+            ' 检查sheet是否已经存在
+            sheet_existed = False
+            For j = 1 To Sheets.Count
+                If Sheets(j).name = sheet_name Then
+                    sheet_existed = True
+                End If
+            Next
+            If sheet_existed <> True Then
+                Sheets.Add After:=Sheets(Sheets.Count)
+                Sheets(Sheets.Count).name = sheet_name
+            End If
+                
+        Next
+        
+        For i = 2 To Sheets.Count
+            ' 筛选数据并拷贝
+            Sheet1.Range("A1:Z" & max_row).AutoFilter Field:=col_to_sort, Criteria1:=Sheets(i).name
+            Sheet1.Range("A1:Z" & max_row).Copy (Sheets(i).Range("a1"))
+        Next
+        
+        Sheet1.Range("A1:Z" & max_row).AutoFilter
+    End If
+    
+    Sheet1.Select
+    
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
+
+End Sub

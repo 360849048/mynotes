@@ -1,0 +1,8 @@
+窗体常用属性：
+    Enable      可用性
+    Caption     标题
+    Visible     可见性
+    ShowModal   显示模态框
+常用方法：
+    Show    显示
+    Hide    隐藏

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JS事件的一些属性</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    .wrap {
+      /* position: absolute;
+      top: 0;
+      left: 0;
+      right: 0; */
+      border: 1px solid gray;
+      box-sizing: border-box;
+    }
+    .container1 {
+      width: 500px;
+      height: 300px;
+      background-color: #eee;
+      margin: 50px;
+      opacity: .5;
+      border: 1px solid gray;
+      box-sizing: border-box;
+    }
+    .container1 .box1 {
+      width: 200px;
+      height: 80px;
+      background-color: #ddd;
+      margin: 100px 200px;
+      border: 1px solid gray;
+      box-sizing: border-box;
+    }
+    .container2 {
+      width: 300px;
+      height: 1000px;
+      background-color: #ccc;
+      margin: 10px 70px;
+      opacity: .5;
+    }
+    .info-wnd {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: none;
+      z-index: -1;
+    }
+    .visualable {
+      display: block !important;
+    }
+    .dashboard {
+      /* position: absolute;
+      right: 0;
+      top: 0; */
+      float: right;
+      border: 1px solid gray;
+      background-color: #fff;
+    }
+    .clearfix::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  </style>
+</head>
+<body>
+  <aside class="dashboard clearfix">
+    <p>document.querySelector(".container2").offsetHeight<button onclick="getContainer2Height()">获取container2的高度</button></p>
+    <p>document.querySelector(".container2").offsetWidth<button onclick="getContainer2Width()">获取container2的宽度</button></p>
+    <p>document.querySelector(".container2").offsetTop<button onclick="getContainer2Top()">获取container2距离顶部距离</button></p>
+    <p>document.querySelector(".container2").offsetLeft<button onclick="getContainer2Left()">获取container2距离左边距离</button></p>
+    <p>
+      window.getComputedStyle(document.querySelector(".container2", null)).xxxx<button onclick="getContainerCss()">获取container2的CSS样式</button>
+      <label for="css-name">尝试用getComputedStyle方法获取具体某个CSS属性</label>
+      <input type="text" id="css-name">
+      <input type="button" value="获取" onclick="getCss()">
+    </p>
+  </aside>
+  <hr>
+  <section class="wrap">
+      <div class="container1">
+        container1
+        <div class="box1">box1</div>
+      </div>
+      <div class="container2">container2</div>
+      <div class="info-wnd"></div>
+    </section>
+
+  <script>
+    var attributes = ['screenX', 'screenY', 'clientX', 'clientY', 'pageX', 'pageY', 'layerX', 'layerY', 'offsetX', 'offsetY']
+    var domInfoWnd = document.querySelector(".info-wnd");
+    var timer = null;
+
+    document.querySelector(".wrap").addEventListener("mousemove", function (e) {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(function () {
+        domInfoWnd.classList.add("visualable");
+        domInfoWnd.style.left = e.pageX + 'px';
+        domInfoWnd.style.top = e.pageY + 'px';
+        domInfoWnd.innerHTML = "<strong>screenX/Y：相对于电脑屏幕左上角<br>*clientX/Y：相对于当前页面且不包含滚动条距离<br>*pageX/Y：相对于文档边缘,包含滚动条距离<br>layerX/Y：不清楚其规则<br>*offsetX/Y：相对于所在元素的左上角<br></storng>";
+        for(var i=0; i<attributes.length; i++) {
+          domInfoWnd.innerHTML += attributes[i] + ':' + e[attributes[i]] +'<br>'
+        }
+      }, 1);
+    });
+
+    function getContainer2Height () {      
+      alert(document.querySelector(".container2").offsetHeight);
+    }
+    function getContainer2Width () {      
+      alert(document.querySelector(".container2").offsetWidth);
+    }
+    function getContainer2Top () {
+      alert(document.querySelector(".container2").offsetTop);
+    }
+    function getContainer2Left () {
+      alert(document.querySelector(".container2").offsetLeft);
+    }
+    function getContainerCss () {
+      var cssObj = window.getComputedStyle(document.querySelector(".container2", null));
+      var cssKeys = Object.keys(cssObj);
+      var dispInfo = "";
+      
+      for (var i=0; i<=cssKeys.length; i++) {
+        if (!cssObj[i]) {
+          continue;
+        }
+        dispInfo += cssObj[cssKeys[i]] + ': ' + cssObj[cssObj[cssKeys[i]]] + '\n';
+      }
+      console.log(dispInfo);
+      alert(dispInfo);
+      alert("更多CSS信息请打开控制台查看")      
+    }
+    function getCss () {
+      var cssObj = window.getComputedStyle(document.querySelector(".container2", null));
+      var cssKeys = Object.keys(cssObj);
+      var cssCorrectNames = [];
+      for (var i=0; i<cssKeys.length; i++) {
+        cssCorrectNames.push(cssObj[cssKeys[i]]);
+      }
+
+      var cssInputName = document.querySelector("#css-name").value;
+      
+      if (cssCorrectNames.indexOf(cssInputName) === -1) {
+        alert("请输入合法的CSS名称");
+      } else {
+        alert(cssObj[cssInputName]);
+      }
+
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+* VBA事件
+    VBA事件需要写在 Microsoft Excel下，而不是 模块 下。
+    * 在响应事件期间，通常需要禁用Excel事件响应，防止出现死循环，结束后重新启用事件响应
+        Application.EnableEvents = False
+        
+        ...
+        
+        Application.EnableEvents = True
+    * 常用的事件
+        * Sheet
+            * SelectionChange   单元格选择发生变化触发
+                应用示例：
+                    * 鼠标单击选择某一行时，将该行背景改为黄色，方便观察。
+            * Change    表下的任何发生变动触发（比较危险，容易触发死循环）
+                应用示例：
+                    * 当某一个单元格数据发生变化，自动刷新其他数据
+            * Activate  切换到某个表时触发    
+            
+        * Workbook
+            * AfterSave 保存文件后触发
+                应用示例：
+                    * 每次保存文件后，生成一份备份文件
+                    
+                    
+* VBA常用函数
+    now()   获取当前时间
+    format(now, "yyyymmddhhmmss")   按某个格式生成一个时间戳字符串
+    IsNumeric   判断是否是数值
+    val    字符串转数值
+    len("abc")  获取字符串长度
+    Split   切割字符串，但是返回的是一个数组
+    InStr("abc", "a")   得到1（如果找不到就返回0）
+    (VBA.DateTime.DateSerial(2020, 2, 20)   返回2020/02/20
+    
+    ' 用Dir方法可以获取某个文件夹下的文件，其支持通配符
+    fileName = Dir("d:\data\*.xls*")
+    For i = 0 to 100 Then
+        If fileName = '' Then
+            Exit For
+        End If
+        Range("a" & i) = fileName
+        ' Dir方法可以获取到很多文件，每次执行下面的代码就可以获取1个文件名。直到获取到一个空字符串，代表文件已经获取完毕，再继续获取代码会出错。
+        fileName = Dir
+    Next
+    
+* VBA调用Excel函数
+    所有Excel位于Application.WorksheetFunction和VBA这两个对象下面
+    
+    * 用法示例：
+        Application.WorksheetFunction.CountA(Sheet2.Range("a:a"))   计算A列有多少个数据
+        VBA.Information.IsNumeric(x)    
+        也可以直接使用IsNumeric，以及InputBox也类似
+    * 需要注意的地方
+        某些例如函数，例如VLookup函数在Excel单元格中使用时，可能会遇到#REF或#N/A等情况，在VBA遇到这种情况，会直接抛出异常，终止后续代码的执行。
+        通过在代码中添加 On Error Resume Next 可以让程序执行遇到错误时，跳过异常代码段，继续执行后续的代码。
+        On Error Goto err_handle
+        exit sub    注意这里必须退出，否则还会继续执行下面的err_handle
+        err_handle：
+           range("a1") = 'err'
+    
+    
+* Excel函数
+    * Count     计算包含数值的单元格有多少个
+    * CountA    计算包含文本或数值单元格有多少个
+    * VLookup   搜索某一列，返回同一行的右边的某一个值。注意返回的值不能是搜索值的左边列的值，另外这个虽然只能搜索某一列，但是传入的区域必须涵盖了返回值的列。
+    
+    
+* 自定义函数(Function)
+    在模块中定义的Function，可以像普通Excel函数一样，在单元格中进行调用。
+    Function zmj(val)
+        zmj = val * 6.02 - val * 0.03
+    End Function
+    注意Function和Sub的区别：
+        Function可以在Excel单元格中进行直接使用，Sub不行
+        Function在Sub中可以直接调用，但是Sub需要用call
+        Function不能F5运行，但是Sub可以
+        Function可以有返回值，返回值和函数名字一样。但是Sub好像没有返回值
