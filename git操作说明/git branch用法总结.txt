@@ -1,0 +1,21 @@
+git branch 不带任何参数：列出本地已经存在的分支，并且在当前分支的前面加"*"标记
+
+git branch -r：列出远程仓库上的分支
+
+git branch -a：列出本地分支和远程分支
+
+git branch 新分支名：创建一个新的本地分支，这里只创建而不进行分支切换
+
+git branch -m | -M oldbranchname newbranchname：重命名分支，当分支名已存在时，使用-M强制重命名
+
+git branch -d | -D branchname：删除分支，当分支未合并时，使用-D强制删除
+
+
+git branch -rd branchname：删除本地remote-tracking branch(本地远程分支)，并不能真正删除远程仓库的分支，使用git fetch origin命令又会从远程仓库发现这个分支，只能使用git push origin :branchname的方式删除远程分支
+
+git checkout -b newbranch origin/newbranch：从远程仓库下载某个分支到本地，其实所谓下载某个分支只需要git checkout newbranch，具体见下面说明。
+必须明白本地分支、本地远程分支和远程分支这三者的区别，本地分支和本地远程分支其实都位于本地计算机上，只有远程分支真正位于服务器上。
+当从远程仓库clone到本地时，这时候本地分支只有master，但是远程仓库的所有分支会被下载到本地远程分支上。
+例如：
+远程仓库上有分支master和dev，当本地clone远程仓库后，使用git branch -a看到此时本地分支只有master，但本地远程分支有origin/master和origin/dev。
+如果需要切换到dev分支，可以直接使用git checkout dev。

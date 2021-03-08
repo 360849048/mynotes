@@ -1,0 +1,6 @@
+当改完代码，发现分支选错了，可以使用git stash命令
+git add .
+git stash
+git checkout 正确的分支
+git stash pop
+git commit -m 'xxxx'

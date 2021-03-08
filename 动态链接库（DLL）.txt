@@ -1,0 +1,35 @@
+Windows操作系统平台：
+动态链接库：dll类型
+静态链接库: lib类型
+
+动态链接库简介：
+    动态链接库是一种资源整合：函数、变量、类、资源......
+
+静态库和动态库的区别：
+    a.静态库中的代码直接塞到EXE中，动态库则是被EXE动态的加载和卸载；
+    b.静态库终不能在包含其他动态或静态库，但是动态库可以。
+    
+    
+静态库的编写
+    /* 代码来自libtest.h文件 */
+    #pragma once
+    extern "C" int add(int a, int b);   // 加上extern "C"前缀保证编译后.lib文件中的函数名字依然是add
+
+
+    /* 代码来自libtest.cpp文件 */
+    int add(int a, int b)
+    {
+        return a + b;
+    }
+
+静态库的调用
+    /* 代码来自main.cpp */
+    #include "libtest.h"
+    #pragma comment(lib, "libtest.lib")  // 引用lib库，也可以在编译器中设置代替此行代码
+    
+    int _tmain(int argc, _TCHAR* argv[])
+    {
+        printf_s(TEXT("7+8=%d\n"), add(7,8));
+        return 0;
+    }
+    

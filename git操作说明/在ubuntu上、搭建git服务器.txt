@@ -1,0 +1,24 @@
+1. 安装git
+    sudo apt-get install git
+ 
+2. 安装ssh服务
+    sudo apt-get install openssh-server openssh-client
+    
+3. 创建git服务器管理用户
+    sudo useradd git
+    
+4. 创建git仓库存储目录及权限
+    sudo mkdir /home/git/repositories
+    sudo chown git:git/home/git/repositories
+    sudo chmod 755 /home/git/repositories
+    
+5. 切换到git用户并创建服务器仓库，这里举例初始化名为test的仓库
+    su git
+    cd /home/git/repositories
+    git init --bare test.git
+    
+到此服务器搭建完成。
+在客户端可以使用一下命令克隆仓库，比如服务器ip是192.168.1.10
+git clone git@192.168.1.10:/home/git/repositories/test.git
+
+这个服务器上的仓库所有人都可以访问，前提是需要知道服务器的账号密码

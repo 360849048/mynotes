@@ -25,7 +25,7 @@
                 Exit For
             End If
         Next
-    *  For Each
+    * For Each
         Dim rng as Range
         
         For Each rng in Range("A1:A10")

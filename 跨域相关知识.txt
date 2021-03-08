@@ -35,7 +35,7 @@
 
 			// 2. 动态创建一个 script 标签，并且告诉后端回调函数名叫 handleResponse
 			var body = document.getElementsByTagName('body')[0];
-			var script = document.gerElement('script');
+			var script = document.createElement('script');
 			script.src = 'http://www.laixiangran.cn/json?callback=handleResponse';
 			body.appendChild(script);
 

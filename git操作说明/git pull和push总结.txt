@@ -1,0 +1,30 @@
+git push的格式：
+git push <远程主机名> <本地分支名>:<远程分支名>
+
+示例：
+git push origin  master：
+将本地的master分支推送到origin主机的master分支，如果master不存在那么会被新建。
+
+git push origin :master
+# 等同于
+git push origin --delelte_master
+上面命令会删除远程master分支
+
+git push origin: 将当前分支推送到origin主机的对应分支
+
+git push origin --all：将本地所有分支都推送到origin主机
+
+
+git pull   从远程仓库获取分支并合并到本地分支
+git pull的格式：   （注意和git push命令分支名先手顺序不同）
+git pull <远程主机名> <远程分支名>:<本地分支名>
+
+示例：
+git pull origin next:master
+获取远程next分支，与本地的master分支合并
+git pull origin next
+获取远程next分支，合并到本地当前(next)分支
+git pull origin
+获取远程当前分支，并合并。
+git pull
+当前分支与唯一一个追踪分支进行合并。

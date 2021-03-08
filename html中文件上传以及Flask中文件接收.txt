@@ -1,0 +1,114 @@
+最简单的html代码
+<form action="/api/srctransfer" enctype="multipart/form-data" method="POST">
+    <label>文件上传</label>
+    <input id="fileUpload" type="file" name="file"  multiple="multiple">
+    <input type="submit" value="上传">
+</form>
+    注意：
+        在<input>中一定要带有name属性，否则在Flask中将没有办法获取到相应的文件；带有属性 multiple="multiple"时，允许同时选中多个文件并上传
+        form表单的enctype属性必须是multipart/form-data，method必须是POST，其中action是后台接收文件的url
+
+最简单的Flask代码
+    files = request.files.getlist("file")
+    # 通过下面方法可以获取获取到当前py文件所在的目录 F:\MyProj\app
+    basepath = os.path.dirname(__file__)
+    print(basepath)
+    for file in files:
+        file.save("app/static/cache/" + file.filename)
+    return jsonify("ok")
+    
+    注意：
+        request.files["file"] 这里的名为"file"的属性，就是在html中<input id="fileUpload" type="file" name="file">的name属性
+        在file.save方法中，传入的路径必须正确，而且包含的目录必须是已经存在的
+        
+        
+使用jQuery进行ajax方式上传文件
+let formData = new FormData();
+let fileUpload = document.querySelector("#fileUpload");
+
+// 下面两个属性随便写的，和上传文件无关
+formData.append("username", "J");
+formData.append("gender", "male");
+// 这里只用来上传列表中的第一个文件，多个文件上传方法有待探索
+formData.append("file", fileUpload.files[0]);
+
+$.ajax({
+    url: '/api/srctransfer',
+    dataType: 'json',
+    type: 'POST',
+    data: formData,
+    processData : false, // 使数据不做处理
+    contentType : false, // 不要设置Content-Type请求头
+    success: function(data){
+        console.log(data);
+    },
+    error: function(res){
+        console.log(res);
+    }
+})
+    注意：html代码全部照搬最上面（最简单的html代码）内容。
+    
+    
+使用axios进行ajax方式上传文件（附带显示上传进度）
+let formData = new FormData();
+let fileUpload = document.querySelector("#fileUpload");
+
+// Only support 1 file at a time.
+formData.append("file", fileUpload.files[0]);
+
+const config = {
+    headers: {
+        "Content-Type": "multipart/form-data;boundary="+new Date().getTime()
+    },
+    onUploadProgress: e => {
+        // 假定有html代码如下：
+        // <div class="progress">
+        //   <div class="progress-bar" role="progressbar" ref="uploadProgressBar"></div>
+        // </div>
+        this.$refs.uploadProgressBar.style.width = e.loaded / e.total * 100 + "%";
+  }
+};
+axios.post("/api/srctransfer", formData, config).then(function(res){
+    console.log(res);
+}).catch(function(err){
+    console.log(err);
+})
+    
+    
+使用XMLHttpRequest对象进行文件上传（下面代码从网上复制，并未实际测试）
+
+<script>
+    //首先监听input框的变动，选中一个新的文件会触发change事件
+    document.querySelector("#file").addEventListener("change",function () {
+        //获取到选中的文件
+        var file = document.querySelector("#file").files[0];
+        //创建formdata对象
+        var formdata = new FormData();
+        formdata.append("file",file);
+        //创建xhr，使用ajax进行文件上传
+        var xhr = new XMLHttpRequest();
+        xhr.open("post","/");
+        //回调
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState==4 && xhr.status==200){
+                document.querySelector("#callback").innerText = xhr.responseText;
+            }
+        }
+        //获取上传的进度
+        xhr.upload.onprogress = function (event) {
+            if(event.lengthComputable){
+                var percent = event.loaded/event.total *100;
+                document.querySelector("#progress .progress-item").style.width = percent+"%";
+            }
+        }
+        //将formdata上传
+        xhr.send(formdata);
+    });
+</script>
+    
+    
+    
+    
+    
+    
+        

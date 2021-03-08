@@ -1,0 +1,20 @@
+git add <file>：将某个发生更改的文件或者文件夹下所有文件都添加到stage中
+
+git add：将所有更改的文件全部加入到stage中
+
+git add -p：挨个确认更改文件是否加入到stage中
+
+
+
+
+git commit -m "<message>"：将已经加入到stage中的更改提交并记录commit 信息
+
+git commit -am "<message>"：相当于git add和git commit -m的组合，前提是被改动的文件已经tracked
+
+git commit --amend：修改最近一次的commit记录
+
+
+
+git diff <file>：查看某个文件的变动
+
+git diff .：查看所有更改文件的变动，有时候文件多了使用这个命令查看更改也不方便。
