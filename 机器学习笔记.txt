@@ -1,0 +1,210 @@
+Jupyter Notebook魔法命令
+    * %run test/test.py
+        调用某个路径的py文件
+    * %timeit
+        测量单条语句的执行时间（可能会执行多遍，取最快的几次平均值）
+    * %%timeit
+        测量多条语句的执行时间
+    * %time
+        测量单条语句的执行时间（只执行一遍，获得的时间可能不稳定）
+    * %%time
+        测量多条语句的执行时间（只执行一遍，获得的时间可能不稳定）
+    * %lsmagic
+        查看所有的魔法命令
+    * %xxx?
+        查看xxx魔法命令的使用说明
+
+
+numpy基础
+
+    import numpy as np
+    
+    # array
+    nparr = np.array([i for i in range(5)])    # array([0, 1, 2, 3, 4])
+    print(nparr.dtype)   # dtype(int64)  默认类型为int
+    nparr2 = np.array([1, 2, 3.0])  # array([1., 2., 3.])
+    print(nparr.dtype)   # dtype('float64')
+    
+    # zeros ones full
+    np.zeros(shape=5, dtype=int)    # array([0, 0, 0, 0, 0])
+    np.zeros((shape=3, 5))          # 创建一个矩阵，初始值为0.0
+    np.ones((3, 5))                 # 创建的矩阵，初始值为1.0
+    np.full(shape=(3, 5), fill_value=666)            # 创建的一个矩阵，初始值为666 (int类型)，如果需要时float，需要传入fill_value=666.0
+    
+    # arange
+    np.arange(5)            # array([0, 1, 2, 3, 4])
+    np.arange(0, 1, .2)     # array([0., 0.2, 0.4, 0.6, 0.8])
+    
+    #linspace
+    np.linspace(0, 10, 6)   # array([0, 2, 4, 6, 8, 10])
+    
+    # random
+    np.random.randint(0, 10)    # 获取一个0到9的随机数
+    np.random.randint(0, 10, size=5)    # array([0, 5, 9, 2, 4])
+    np.random.randint(0, 10, size=5)    # array([0, 5, 9, 2, 4])
+    np.random.randint(0, 10, size=(3, 5))   # 生成随机矩阵
+    np.random.seed(666)     # 指定随机种子，保证每次生成的随机值都是一样，方便测试
+    np.random.random()      # 生成float类型的随机数
+    np.random.random(10)    # 生成float类型的随机数组
+    np.random.random((3,5)) # 生成float类型的随机矩阵
+    # 在Jupyter Notebook中使用np.random.normal?可以调出说明文档
+    np.random.normal()      # 符合正态分布的float类型的随机数
+    np.random.normal(10, 100)   # 均值为10，方差为100的符合正态分布的float类型的随机数
+    np.random.normal(10, 100, (3, 5))   # 均值为10，方差为100的符合正态分布的float类型的随机矩阵
+    np.random.shuffle(x)    将数据打乱，只能打乱一维数组，或者按行打乱矩阵
+    
+    # array对象的属性（下面针对矩阵进行说明）
+    x = np.arange(15).reshape((3, 5))   # reshape方法可以改变数组的维度，如果只想指定行数或列数，另外一个参数可以填-1
+    X.ndim  # 得到一个二维数组
+    X.shape # (3, 5)
+    X.size  # 15
+    X[2, 2] # 访问多维数组的某个元素
+    X[:2, :3]   # 获取前两行的前三列
+    X[0, :] # 获取第一行
+    X[:, 0] # 获取第一列
+    subX = X[:2, :3].copy() # 如果不调用copy，修改子矩阵会影响原矩阵中的数据
+    
+    # concatenate
+    np.concatenate([A, B], axis=0)  # 垂直方向拼接A和B两个矩阵（注意：只能是两个矩阵）,axis=1时，水平拼接
+    # vstack
+    np.vstack([A, z])   # 把向量z（也可以是一个矩阵）添加到矩阵A的后面一行
+    # hstack
+    np.hstack([A, X])   # 把矩阵X按列添加到矩阵A后面，注意不X不可以是向量
+    
+* numpy中的矩阵运算
+    * Universal Functions 矩阵支持几乎所有的运算符，例如
+        A + 1
+        A - 1
+        A * 2
+        A / 2
+        A // 2
+        A ** 2
+        A % 2
+        1 / A
+        np.abs(A)
+        np.sin(A)
+        np.exp(A)
+        2 ** A
+        np.log(A)    
+    * 矩阵运算
+        A + B
+        A - B
+        A * B   （特别注意，这只是对应元素作乘法运算，不是数学上的矩阵相乘）
+        A / B    （与上面的*用法类似）
+        A.dot(B)    （这才是数学上的矩阵的乘法）
+        A.T     （矩阵的转置）
+    * 向量和矩阵的运算
+        v + A   （数学上向量和矩阵无法相加，这里只是对矩阵中的每一行作相应的加法）
+        np.vstack([v] * A.shape[0]) + A     （作用和上一句一样）
+        np.tile(v, (2, 1)) + A      （作用和上一句一样）
+        
+        v * A   （特别注意，这只是对应元素作乘法运算，不是数学上的向量和矩阵相乘）
+        v.dot(A)    （这才是数学上的向量和矩阵相乘）（numpy对于向量会自动转换行向量和列向量）
+        
+    * 矩阵的逆
+        np.linalg.inv(A)    获取A的逆矩阵（在数学上，原矩阵和逆矩阵相乘，得到一个单位矩阵）
+        np.linalg.pinv(A)   获取一个伪逆矩阵（因为数学上只有方阵才有逆矩阵，机器学习中，很多都不是方阵，但仍有求逆矩阵的需求 ，它和原矩阵相乘也得到一个单位矩阵）
+
+* numpy中的聚合操作
+    np.sum(A)   每个元素相加
+    np.prod(A)  每个元素相乘
+    np.mean(A)  求平均值
+    np.median(A)    求中位数
+    np.percentile(A, q)    求百分位，q可以取0-100的值，q=50相当于求中位数，q=100相当于求最大值，q=0相当于求最小值。常用的百分位有0,25,50,75,100
+    np.var(A)   求方差
+    np.std(A)   求标准差
+    
+* numpy中的arg运算
+    np.argmin(A)    获取最小值的索引值（用来知道最小值在什么位置）
+    np.argmax(A)    获取最大值的索引值    
+    np.argsort(A)   进行数据排序，但是返回值是索引值
+    np.partition(x, 3)  相当于快排中的一次排序，把比3小的元素放到左边，比3大的放右边，但两边的元素并不是有序排列的
+
+* numpy中的Fancy Indexing
+    idx = [3, 5, 8]
+    x[idx]  获取数组x中索引为3，5，8的值。这个方法同样适用在矩阵中
+    row = np.array([0, 1, 2])
+    col = np.array([1, 2, 3])
+    A[row, col]     获取(0, 1), (1, 2), (2, 3)的值
+        
+* numpy中的比较
+    A < 3   返回一个shape和A一样的的bool矩阵
+    用途：
+        np.sum(A < 3)   数出小于3的数据个数
+        np.count_nonzero(A < 3) 效果和上面的一样
+        np.any(x == 0)  只要有一个元素==0，就返回True
+        np.any(x > 0)   所有元素都>)，才返回True
+        x[x >5]     获取满足条件的子数组
+        注意：多个条件判断时，需要用位运算连接，比如&和|，不可以用条件运算符(&&和||)
+        
+* matplotlib
+    * 折线图 matplotlib.pyplot.plot
+        # 最基础的绘制函数线条
+        x = np.linspace(0, 10, 100)
+        y = np.sin(x)
+        pyplot.plot(x, y)
+        pyplot.show()
+        
+        # 对曲线样式进行设置
+        pyplot.plot(x, y, color="red", linestyle="--")
+        
+        # 同时绘制多条曲线
+        y1 = np.sin(x)
+        y2 = np.cos(x)
+        pyplot.plot(x, y1)
+        pyplot.plot(x, y2)
+        pyplot.show()
+        
+        # x轴和y轴标签
+        pyplot.xlabel("x x轴")
+        pyplot.ylabel("y y轴")
+        
+        # 曲线图示
+        pyplot.plot(x, y1, label="sin(x)")
+        pyplot.plot(x, y2, label="cos(x)")
+        pyplot.legend()
+        
+        # 曲线标题
+        pyplot.title("Only English Allowed")    # 标题只能用英文，否则容易出错
+        
+    * 散点图 matplotlib.pyplot.scatter    
+        将上面的plot替换为scatter就可以
+        
+        # 半透明的散点图
+        pyplot.scatter(x, y, alpha=0.5)
+        
+        # 不同形状的散点图
+        pyplot.scatter(x, y, marker="o")   # marker默认是o，可以传入+和x
+        
+        
+        
+* kNN (k近邻算法)
+    * kNN算法原理：
+        对于新获得的一个数据，将其与原样本中的每一个数据进行对比，计算这个数据与样本中每个数据的距离，选取与这个数据最近的k个样本（k通常是一个经验值），根据这k个样本的来判断新数据应该属于哪个类别。
+        
+    * kNN算法的代码实现
+
+    
+    * 使用sklearn库进行kNN
+        from sklearn.neighbors import KNeighborsClassifier
+        
+        kNN_classifier = KNeighborsClassifier(n_neighbors=6)
+        kNN_classifier.fit(X_train, y_train)
+        y_predict = kNN_classifier.predict(X_predict)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
