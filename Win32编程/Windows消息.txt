@@ -1,0 +1,56 @@
+* 标准消息
+	以WM_开头的消息（特例WM_COMMAND），以下举例一些常用标准消息
+	WM_NULL		空消息，此消息将被被接受窗口忽略
+	WM_NCCREATE	应用程序创建non-client区域，包括标题栏、窗口边框、滚动条等，如果此消息返回TURE，CreateWindow会继续发送WM_CREATE，否则窗口将不被创建。 
+	WM_CREATE	应用程序创建一个窗口，在这里可以初始化滚动条，子窗口等
+	WM_MOVE		移动一个窗口
+	WM_SIZE		改变一个窗口的大小
+	WM_ACTIVE	一个窗口被激活或者失去激活状态
+	WM_SETFOCUS	获得焦点后
+	WM_PAINT	窗口重绘消息，以下情况会触发操作系统发送WM_PAINT消息：
+					1.程序启动时的UpdateWindow函数会触发
+					2.鼠标调整窗口大小时，会连续触发
+					3.最小化时不会触发，但从最小化还原时会进行触发
+					4.最大化时会触发
+					5.当窗口向屏幕外拖动时，不会触发，但拉回到屏幕内时会触发
+					6.使用InvalidateRect函数会触发
+	WM_CLOSE	当一个窗口或者应用程序要关闭时发送一个信号，通常这里使用DestoryWindow()，用来发送WM_DESTROY消息
+	WM_DESTROY	一个窗口被销毁，通常这里使用PostQuitMessage()来发送WM_QUIT消息
+	WM_NCDESTROY	发送WM_DESTROY之后会继续发送WM_NCDESTROY消息
+	WM_QUIT		结束消息循环，可调用PostQuitMessage()来产生此消息
+	WM_ERASEBKGND	当窗口北京必须被擦除时（例如窗口大小改变时）
+	WM_MOUSEMOVE	鼠标移动
+	WM_LBUTTONDOWN	按下鼠标左键
+	WM_LBUTTONDBLCLK	双击鼠标左键
+	WM_RBUTTONDOWN	按下鼠标右键
+	WM_MOUSEWHEEL	鼠标滚轮消息
+	WM_SIZING	调整窗口大小时发送此消息给窗口，通过此消息应用程序可以监视或者修改窗口大小和位置
+	WM_MOVING	移动窗口时发送此消息给窗口，通过此消息应用程序可以监视或者修改窗口带下和位置
+	WM_MDICREATE	发送此消息给多文档的客户窗口来创建一个MDI子窗口
+	WM_MDIDESTROY	发送此消息给多文档的客户窗口来关闭一个MDI子窗口
+	WM_MDIACTIVATE	发送此消息给多文档的客户窗口通知客户窗口激活另一个MDI子窗口
+	WM_MDINEXT	MDI客户窗口激活下雨给或者前一个窗口
+	WM_HOTKEY	当用户按下由RegisterHotKey()注册的热键时来产生此消息
+	
+	WM_USER		为了防止用户定义的消息ID与系统的消息ID冲突，Microsoft定义了一个WM_USER，小于WM_USER的ID被系统使用，大于WM_USER的ID被用户使用。
+	
+* 命令消息
+	以WM_COMMAND表示，来自菜单、加速键或者工具栏按钮的消息
+	备注：
+	LOWORD(wParam)是菜单后者加速键的ID，菜单的分隔条ID为0.对于系统菜单（点击窗口左上角图标弹出的菜单）的菜单项和加速键，点击后，Windows会发送WM_SYSCOMMAND，而不是WM_COMMAND。
+	
+* 通告消息
+	以WM_COMMAND或_NOTIFY形式呈现的消息。表示由各种控件产生的消息，例如按钮的单击等，为的是向父窗口通知事件的发生。
+	备注：
+	LOWORD(wParam)是控件ID，HIWORD(wParam)是Notification Code，比如BN_CLICKED，BN_DBLCLK等，标志用户对控件的操作，双击，单击之类。
+	lParam是控件的句柄（菜单和快捷键该项为0）。
+	
+	Notification Code命名规律：
+	Button		BN_XXX
+	ListBox		LBN_XXX
+	ComboBox	CBX_XXX
+	Tab			TBN_XXX
+	Edit		EN_XXX
+	Static		STN_XXX
+	
+	WM_NOTIFY可看作是WM_COMMAND的扩展，可携带更多的信息Edit，Button, ListBox用WM_COMMAND消息，ListView, Toolbar, Tree等控件用的是ListView

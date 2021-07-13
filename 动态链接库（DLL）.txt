@@ -9,7 +9,7 @@ Windows操作系统平台：
     a.静态库中的代码直接塞到EXE中，动态库则是被EXE动态的加载和卸载；
     b.静态库终不能在包含其他动态或静态库，但是动态库可以。
     
-    
+
 静态库的编写
     /* 代码来自libtest.h文件 */
     #pragma once
@@ -32,4 +32,109 @@ Windows操作系统平台：
         printf_s(TEXT("7+8=%d\n"), add(7,8));
         return 0;
     }
-    
+
+	
+
+动态链接库的编写
+	DLL程序入口点函数：
+	GUI控制台程序(Console): main
+	GUI用户界面程序: WinMain
+	DLL程序入口点函数：DllMain （仅导出资源的DLL可以没有DllMain，其他情况如果没有写DllMain函数，编译器在编译的时候会自动添加缺省的DllMain函数）
+	BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+	{
+		return TRUE;
+	}
+	hModule: 指向DLL本身的实例句柄
+	ul_reason_for_call有4个取值：
+		DLL_PROCESS_ATTACH:
+			当DLL被进程“第一次”调用时，ul_reason_for_call取该值。同一进程后来再次调用该DLL，操作系只会增加DLL的使用次数，不会取该值。
+		DLL_PROCESS_DETACH:
+			当DLL从进程的地址空间解除映射时，系统调用了它的DllMain，传递的ul_reason_for_call的值是DLL_PROCESS_DETACH。
+			如果进程的调用是因为调用了TerminateProcess，系统就不会用DLL_PROCESS_DETACH来调用DllMain函数，这意味这DLL在进程结束前没有机会执行任何清理工作
+		DLL_THREAD_ATTACH:
+			当进程创建一个线程时，新创建的线程会用该值调用DllMain。
+		DLL_THREAD_DETACH:
+			如果线程调用了ExitThread来结束线程（线程函数返回时，系统会自动调用ExitThread），会用该值DllMain函数。
+			如果线程的结束是因为调用了TerminateThread，系统不会用该值来调用DllMain
+	lpReserved: 目前该参数没有意义
+	
+	DLL导出函数的方式：
+		*.def 和 _declspec(dllexport)关键字
+		
+		1. *.def方式导出
+		/* 代码来自dlltest.def文件 */
+		LIBRARY "dlltest"
+		EXPORTS
+			add @1
+		
+		2. _declspec(dllexport)关键字导出
+		/* 代码来自dlltest.h文件 */
+		#pragma once
+		extern "C" _declspec(dllexport) int dec(int a, int b);
+		
+	
+
+动态链接库的调用
+	1.隐式链接（完全靠编译器工作，还必须得有*.lib文件）
+		特点是由编译器完成对DLL的加载和程序结束时对DLL的卸载工作，如果程序结束时还有其他应用程序使用该DLL，那么系统会使DLL的使用计数减1，当DLL的使用计数变为0时，会将DLL从内存中删除。
+		隐式链接方式简单使用，但缺少灵活性。
+		使用方法：使用隐式链接DLL时，需要将DLL的引入库文件(*.lib)与应用程序进行静态链接。
+		#pragma comment(lib, "dlltest.lib")
+		_declspec(dllimport) int  add(int a, int b);			// 用def导出的方法不要在前面加extern "C"
+		extern "C" _declspec(dllimport) int dec(int a, int b);  // 用_declspec(dllexport)导出的需要在导出和导入时候全部加上extern "C"，否则容易编译出错
+		// 接下来就可以使用add和dec方法了
+		
+	2.显式链接
+		显式链接方式完全由编程者用API加载和卸载DLL，编程者可以决定何时加载DLL，加载哪个DLL，何时卸载DLL，卸载哪个DLL等。
+		使用方法：
+		LoadLibrary(...) 该API用来加载指定的DLL
+		GetProcAddress(...) 该API用来获取DLL中导出函数的指针，即导出函数的入口点
+		FreeLibrary(...) 该API用于卸载指定的DLL
+		注意：如果程序中多次调用LoadLibrary加载同一个DLL，那么在卸载的时候也需要调用相应次数的FreeLirary
+		
+		// 首先定义函数指针
+		typedef int (*ADD)(int, int);
+		typedef int (*DEC)(int, int);
+		
+		int main()
+		{
+			HMODULE hDll = LoadLibrary(TEXT("../Debug/dlltest.dll"));
+			if (hDll)
+			{
+				ADD add = (ADD)GetProcAddress(hDll, "add");
+				DEC dec = (DEC)GetProcAddress(hDll, "dec");
+				int a, b;
+				a = add(7, 8);
+				b = dec(7, 8);
+				std::cout << a << std::endl;
+				std::cout << b << std::endl;
+				FreeLibrary(hDll);
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

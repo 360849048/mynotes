@@ -1,0 +1,65 @@
+* 创建一个按钮
+	LRESULT CALLBACK MyWindowProc(HWND hWnd, UNIT Msg, WPARAM wParam, LPARAM lParam)
+	{
+		switch(Msg)
+		{
+			case WM_CREATE:
+			{
+				HWND hBtn1 = CreateWindow(L"Button", L"你好", 
+										  WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, // 创建普通点击按钮
+										  15, 5,
+										  100, 80,
+										  hWnd,
+										  (HMENU)111,
+										  (LPCREATESTRUCT)lParam)->hInstance,
+										  NULL);
+			}break;
+			
+			case WM_COMMAND:
+				switch(LOWORD(wParam))
+				{
+					case 111:
+						if(HIWORD(wParam) == BN_CLICKED)
+						{
+							...
+						}break;
+				}
+		}
+		return DefWindowProc(hWnd, Msg, wParam, lParam);
+	}
+	
+* 获取单选按钮和复选按钮的状态
+	使用SendMessage向控件发送BM_GETCHECK消息
+	或者直接使用Button_GetCheck宏，返回值为：
+		BST_CHECKED		按钮被选中
+		BST_INDERMINATE 按钮处于不确定状态
+		BST_UNCHECKED	按钮未被选中
+		
+	if(SendMessage(hBtn1, BM_GETCHECK, 0, 0) == BST_CHECKED)
+	{
+		...
+	}
+	
+	Button_GetCheck宏本质仍未调用SendMessage方法
+	#define Button_GetCheck(hwndCtrl) ((int)(DWORD)SNDMSG((hwndCtrl), BM_GETCHECK, 0L, 0L))
+	
+* 美化按钮控件
+	1. 使用BS_BITMAP
+				HWND hBtn1 = CreateWindow(L"Button", L"你好", 
+										  WS_CHILD | WS_VISIBLE | BS_BITMAP, // 使用BS_BITMAP
+										  15, 5,
+										  100, 80,
+										  hWnd,
+										  (HMENU)111,
+										  (LPCREATESTRUCT)lParam)->hInstance,
+										  NULL);
+	2. 使用LoadImage加载位图
+		HBITMAP hBmp = (HBITMAP)LoadImage(NULL, 				//模块示例句柄（比如从dll加载时需要传入该句柄）
+										  L"X:\\XXX\XXX.bmp", 	
+										  IMAGE_BITMAP,
+										  0,					// 使用位图宽
+										  0,					// 指定位图高
+										  LR_LOADFROMFILE); 	//从路径加载图片
+	3. 设置按钮的背景图片
+		使用SendMessage向按钮发送BM_SETIMAGE
+		SendMessage(hBtn1, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
