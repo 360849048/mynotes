@@ -37,7 +37,7 @@ Windows操作系统平台：
 
 动态链接库的编写
 	DLL程序入口点函数：
-	GUI控制台程序(Console): main
+	CUI控制台程序(Console): main
 	GUI用户界面程序: WinMain
 	DLL程序入口点函数：DllMain （仅导出资源的DLL可以没有DllMain，其他情况如果没有写DllMain函数，编译器在编译的时候会自动添加缺省的DllMain函数）
 	BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
@@ -112,9 +112,95 @@ Windows操作系统平台：
 			}
 		}
 		
-		
-		
-		
+远程线程方式DLL注入
+    由于在加载DLL时，DllMain会自动执行的特性，可将业务代码写在注入的dll文件中，实现对第三方程序进行扩展的功能。
+    
+    主要步骤：
+        1. OpenProcess
+            根据PID打开一个进程。注意：如果失败，GetLastError返回5，可以尝试使用管理员身份运行程序，或需要在程序内部进行权限提升操作
+        2. VirtualAllocEx
+            在目标进程中分配内存，用来存放准备注入的dll路径字符串
+        3. WriteProcessMemory
+            在上一步分配得到的内存中写入dll路径
+        4. CreateRemoteThread
+            在目标进程中新建一个线程，起始函数地址为LoadLibrary，参数为dll路径。到此注入的主要工作完成。
+        5. 清理工作参考下面源码
+        
+        
+    Example:
+    
+        BOOL RemoteInject(DWORD dwPid, LPCTSTR lpszDllFileName)
+        {
+            TCHAR szDllFullPath[100];
+            TCHAR szCurWorkDir[100];
+            
+            // GetFullPathName根据程序工作目录组合得到完整路径
+            // 但由于编译器原因，程序工作目录可能并非exe程序所在目录
+            // 这里先更改当前工作目录为exe程序所在目录
+            GetCurrentDirectory(100, szCurWorkDir);
+            GetModuleFileName(NULL, szCurWorkDir, 100);
+            *(_tcsrchr(szCurWorkDir, TEXT('\\')))=0;
+            SetCurrentDirectory(szCurWorkDir);
+
+            HANDLE hProcess = OpenProcess(
+                PROCESS_ALL_ACCESS,
+                FALSE, dwPid);
+            if (!hProcess)
+            {
+                cout << "OpenProcess failed: " << GetLastError() << endl;
+                return FALSE;
+            }
+            GetFullPathName(lpszDllFileName, 100, szDllFullPath, NULL);
+            DWORD dwSize = (lstrlen(szDllFullPath) + 1) * sizeof(TCHAR);
+
+            LPVOID pBuf = VirtualAllocEx(hProcess, NULL, dwSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+            if(!pBuf)
+            {
+                cout << "VirtualAllocEx failed" << endl;
+                return FALSE;
+            }
+            DWORD dwWrite = 0;
+            if (!WriteProcessMemory(hProcess, pBuf, szDllFullPath, dwSize, &dwWrite))
+            {
+                cout << "WriteProcessMemory failed" << endl;
+                VirtualFreeEx(hProcess, pBuf, 0, MEM_FREE);
+                return FALSE;
+            }
+
+            // 加载DLL
+            HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, NULL, (PTHREAD_START_ROUTINE)LoadLibrary, pBuf, 0, 0);
+            if (hRemoteThread == NULL)
+            {
+                cout << "CreateRemoteThread(LoadLibrary) failed, Error code: " << GetLastError() << endl;
+                VirtualFreeEx(hProcess, pBuf, 0, MEM_FREE);
+                return FALSE;
+            }
+            WaitForSingleObject(hRemoteThread, INFINITE);
+            
+            // 线程返回值为LoadLibrary的返回值，即dll的handle
+            DWORD dwExitCode = 0;
+            if (!GetExitCodeThread(hRemoteThread, &dwExitCode))
+            {
+                cout << "GetExitCodeThread failed, Error code: " << GetLastError() << endl;
+                VirtualFreeEx(hProcess, pBuf, 0, MEM_FREE);
+                return FALSE;
+            }
+            CloseHandle(hRemoteThread);
+            VirtualFreeEx(hProcess, pBuf, 0, MEM_FREE);
+
+            // 卸载DLL
+            hRemoteThread = CreateRemoteThread(hProcess, NULL, NULL, (PTHREAD_START_ROUTINE)FreeLibrary, (LPVOID)dwExitCode, 0, 0);
+            if (hRemoteThread == NULL)
+            {
+                cout << "CreateRemoteThread(FreeLibrary) failed, Error code: " << GetLastError() << endl;
+                VirtualFreeEx(hProcess, pBuf, 0, MEM_FREE);
+                return FALSE;
+            }
+            WaitForSingleObject(hRemoteThread, INFINITE);
+            CloseHandle(hRemoteThread);
+
+            return TRUE;
+        }
 		
 		
 		
