@@ -1,0 +1,20 @@
+下面方法可以实现类似于python中split字符串的效果
+void StringSplit(vector<string> &dst_vector, const char* split_str, string src_string)
+{
+	size_t nStartPos = 0;
+	size_t nNextPos = 0;
+	for (;;)
+	{
+		nNextPos = src_string.find(split_str, nStartPos);
+		if (nNextPos != string::npos)
+		{
+			dst_vector.push_back(src_string.substr(nStartPos, nNextPos - nStartPos));
+		}
+		else
+		{
+			dst_vector.push_back(src_string.substr(nStartPos));
+			break;
+		}
+		nStartPos = nNextPos + strlen(split_str);
+	}
+}

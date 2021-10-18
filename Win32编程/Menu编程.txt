@@ -1,0 +1,51 @@
+为窗口设置菜单
+	WNDCLASS wc;
+	wc.xxx = xxx;
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
+	
+响应菜单项按下事件：
+	case WM_COMMAND:
+	{
+		switch(LOWORD(wParam))
+		{
+			case ID_32771:
+			{
+				...
+			}break;
+		}
+	}break;
+	
+LoadMenu
+SetMenu
+	动态加载并设置菜单
+	
+GetMenu
+	获取主菜单句柄
+	
+GetSubMenu
+	获取子菜单句柄
+	
+CheckMenuItem
+	菜单项前打勾（只能是菜单项前面打勾）
+	
+EnableMenuItem
+	激活/禁用某个菜单项，可以是子菜单中的某个菜单项或整个菜单栏中的某一项
+	注意：经测试，在Windows11 VS2017中，MF_GRAYED不仅变灰，子菜单按下消息也会失效
+	
+MFC中的操作
+	对某菜单项打勾
+	GetMenu()->GetSubMenu(0)->CheckMenuItem(ID_32771, MF_BYCOMMAND | MF_CHECKED);
+	激活某个菜单项
+	GetMenu()->GetSubMenu(0)->EnableMenuItem(ID_32771, MF_BYCOMMAND | MF_ENABLED);
+	禁用某个菜单项
+	GetMenu()->GetSubMenu(0)->EnableMenuItem(ID_32771, MF_BYCOMMAND | MF_DISABLED);
+	禁用某个菜单项并显示为灰色
+	GetMenu()->GetSubMenu(0)->EnableMenuItem(ID_32771, MF_BYCOMMAND | MF_GRAYED);
+	
+	CMenu
+		SetMenu(CMenu*)
+			设置菜单，动态地修改菜单
+		LoadMenu
+			加载菜单
+		Detach
+			将HEMNU与CMenu断开联系，避免因为CMenu对象析构时，释放HEMNU资源

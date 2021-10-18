@@ -1,0 +1,62 @@
+GetDC
+    返回一个DC句柄，只有拥有了hdc，才能进行下面的一系列的绘图操作
+    除了在WM_PAINT消息中，其他地方都用这个方法来获取hdc
+    完成绘图操作后，必须必须调用 ReleaseDC，否则会导致资源泄露
+    在MFC中，常用的：CWnd::GetDC（返回一个CDC对象） 和构造一个CClientDC对象。
+    CWnd::GetDC与CWnd::ReleaseDC需要成对使用，CWnd::CClientDC会在对象析构时自动释放DC
+    
+BeginPaint
+    在WM_PAINT获取DC句柄必须使用这个方法，然后使用EndPaint释放DC
+
+InvalidateRect
+    使窗口其中某个矩形区域失效，从而让系统进行重画
+
+MoveToEx
+    更新当前点位信息，调用该方法后会影响其他画图函数。在MFC中，使用cdc.MoveTo可以完成。
+    
+LineTo
+    从当前点位画一条函数到目标点位，当前点可由MoveToEx指定
+    
+TextOut
+    输出一段文字
+
+SetTextColor
+    设置文字的颜色
+    
+SetBkColor
+    设置文字的背景颜色
+    
+CreateCaret
+    创建文字输入光标，默认光标创建在0,0位置，可以通过SetCaretPos进行位置修改
+    注意创建好的光标默认不显示，需要调用ShowCaret才能正常显示
+    
+GetTextMetrics
+    获取当前DC的字体信息，包括宽度，高度等信息
+    
+GetTextExtentPoint
+    获取一段字符串在当前DC中的显示的宽度和高度信息
+    因为各个字符的宽度在显示的时候是不一样的，通过其他方法，很难计算得到一串字符串的宽度
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -1,0 +1,75 @@
+在有一个线程进入临界区后，其他所有试图访问此临界区的线程将被挂起，并一直持续到进入临界区的线程离开。临界区在被释放后，其他线程可以继续抢占
+
+初始化临界区
+InitializeCriticalSection
+删除临界区。需要和InitializeCriticalSection成对出现，否则可能造成资源浪费
+DeleteCriticalSection
+
+进入临界区。当临界区被占用时，线程被挂起，直到成功进入
+EnterCriticalSection
+离开临界区。必须和EnterCriticalSection成对出现，不然后来其他或者自己进入临界区时，线程将被挂起！
+LeaveCriticalSection
+尝试进入临界区。与EnterCriticalSection不同的时：如果无法进入临界区，线程也不会被挂起；如果成功，则后续仍然需要调用LeaveCriticalSection
+TryEnterCriticalSection
+
+
+
+
+
+// 创建一个用于临界锁的class，利用析构函数进行自动释放
+class CGlobalLock
+{
+public:
+    CGlobalLock()
+    {
+        EnterCriticalSection(&s_cs);
+    }
+
+    ~CGlobalLock()
+    {
+        LeaveCriticalSection(&s_cs);
+    }
+
+    static void Init()
+    {
+        InitializeCriticalSection(&s_cs);
+    }
+
+    static void Deinit()
+    {
+        DeleteCriticalSection(&s_cs);
+    }
+
+private:
+    static CRITICAL_SECTION s_cs;
+};
+
+
+// CGlobalLock使用案例
+#define THREAD_NUM 5
+
+int              g_nResource;
+
+DWORD WINAPI ThreadProc(LPVOID lpParam)  
+{  
+    CGlobalLock glock;
+
+    printf("Thread id %d Resource Count %d\n", 
+                GetCurrentThreadId(), g_nResource); 
+    g_nResource++;
+    return 0;  
+}  
+
+int main(void)
+{
+    HANDLE hThreads[THREAD_NUM] = {0};
+    CGlobalLock::Init();
+
+    for (i = 0; i < THREAD_NUM; i++)
+        hThreads[i] = CreateThread(NULL, 0, ThreadProc, NULL, 0, NULL);
+
+    WaitForMultipleObjects(THREAD_NUM, hThreads, TRUE, INFINITE);
+    CGlobalLock::Deinit();
+
+    return 0;
+}

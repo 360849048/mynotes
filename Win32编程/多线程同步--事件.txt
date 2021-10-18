@@ -1,0 +1,73 @@
+事件：事件Event实际上是个内核对。一个事件有两种状态：激发状态和未激发状态。也称有信号状态和无信号状态。
+事件又分两种类型：手动重置事件和自动重置事件。手动重置事件被设置为激发状态后，会唤醒所有等待的线程，而且一直保持为激发状态，直到程序重新把它设置为未激发状态。自动重置事件被设置为激发状态后，会唤醒“一个”等待中的线程，然后自动恢复为未激发状态。
+
+自动Event可以被抽象为四个操作：
+- 创建 CreateEvent(NULL,false,true,NULL);
+- 等待事件被触发 WaitForSingleObject(g_hEvent, INFINITE);
+- 触发后马上重置 SetEvent(g_hEvent); 
+- 销毁 CloseHandle(g_hEvent);
+
+ 
+
+手动Event可以被抽象为五个操作：
+- 创建 CreateEvent(NULL,true,true,NULL);
+- 等待事件被触发 WaitForSingleObject(g_hEvent, INFINITE);
+- 触发 SetEvent(g_hEvent);
+- 其他操作....
+- 重置激活 SetEvent(g_hEvent);
+- 销毁 CloseHandle(g_hEvent);
+
+
+
+
+HANDLE hEvent = NULL;
+
+unsigned __stdcall subthread1(void *pParams)
+{
+	for (int i=0; i<100; i++)
+	{
+		WaitForSingleObject(hEvent, INFINITE);
+		SendMessage((HWND)pParams, WM_PASTE, 0, 0);
+	}
+	return 0;
+}
+
+int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+{
+	hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	HANDLE hTread = (HANDLE)_beginthreadex(NULL, NULL, subthread1, (void*)0x00441572,0, NULL);
+	Sleep(3000);
+	SetEvent(hEvent);
+	//PulseEvent(hEvent);
+	//ResetEvent(hEvent);
+	WaitForSingleObject(hTread, INFINITE);
+	CloseHandle(hEvent);
+	CloseHandle(hTread);
+	return 0;
+}
+
+
+函数解析：
+
+函数功能描述：创建或打开一个命名的或无名的事件对象
+函数原型：
+HANDLE CreateEvent
+(
+　　LPSECURITY_ATTRIBUTES lpEventAttributes, // 安全属性
+　　BOOL bManualReset, // 复位方式
+　　BOOL bInitialState, // 初始状态
+　　LPCTSTR lpName // 对象名称
+);
+参数：
+lpEventAttributes：
+　　一个指向SECURITY_ATTRIBUTES结构的指针，确定返回的句柄是否可被子进程继承。如果lpEventAttributes是NULL，此句柄不能被继承。如果
+lpEventAttributes是NULL，事件将获得一个默认的安全符。
+
+bManualReset：
+　　指定将事件对象创建成手动复原还是自动复原。如果是TRUE，那么必须用ResetEvent函数来手工将事件的状态复原到无信号状态。这时候SetEvent和PulseEvent就有区别了。如果设置为FALSE，当事件被一个等待线程释放以后，系统将会自动将事件状态复原为无信号状态。
+
+
+bInitialState：
+　　指定事件对象的初始状态。如果为TRUE，初始状态为有信号状态；否则为无信号状态。
+lpName：
+　　指定事件的对象的名称，是一个以0结束的字符串指针。名称的字符格式限定在MAX_PATH之内。名字是对大小写敏感的。

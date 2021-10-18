@@ -1,0 +1,11 @@
+SetTimer
+    创建一个定时器，定时器会触发WM_TIMER消息或调用传入的回调函数（原理上还是响应了WM_TIMER消息）
+    定时器可以通过KillTimer删除，因为定时器会每隔多少时间重复触发，类似JS中的SetInterval，而不是SetTimeout
+    注意这个定时器最小的时间是10ms，具体细节可从MSDN中查询该函数用法
+    
+Sleep
+    延迟指定的时间，Sleep方法会阻塞当前线程，而SetTimer不会
+    
+GetModuleHandle
+	获取某个已经加载模块的句柄（dll或exe文件），GetModuleHandle(NULL)可以获取当前应用实例句柄
+

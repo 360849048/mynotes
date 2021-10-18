@@ -1,0 +1,85 @@
+需要特别注意的地方：
+	* 进行消息循环时，GetMessage(&msg, NULL, 0, 0) 第二个参数必须时NULL，如果不小心填了hwnd，可能会因为DestroyWindow销毁了hwnd，而导致GetMessage返回值为-1，调用GetLastError得到错误1400（无效的窗口句柄）
+	* 在窗口过程处理函数的switch结构下，对于实际没有处理的消息，不要光写一个break，最好都交给DefWindowProc进行处理，比如写了WM_PAINT，但下面直接就break，而没有其他处理会导致窗口无法正常绘制
+
+下面是一个简单的示例窗口程序
+
+
+
+#include <Windows.h>
+
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+int WINAPI WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR     lpCmdLine,
+	int       nShowCmd
+)
+{
+	WNDCLASS wc;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = WindowProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wc.hCursor = LoadCursor(NULL, IDC_APPSTARTING);
+	wc.hbrBackground = (HBRUSH)COLOR_ACTIVEBORDER;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = TEXT("MainWindow");
+	RegisterClass(&wc);
+	
+	HWND hwnd;
+	hwnd = CreateWindow(TEXT("MainWindow"), TEXT("My first window"), WS_OVERLAPPEDWINDOW, 0, 0, 800, 600, NULL, NULL, hInstance, NULL);
+	ShowWindow(hwnd, SW_SHOW);
+	UpdateWindow(hwnd);
+
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return 0;
+}
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_CHAR:
+	{
+		TCHAR szChar[20];
+		wsprintf(szChar, TEXT("敲下按键: %c"), wParam);
+		MessageBox(hwnd, szChar, TEXT("提示"), MB_OK);
+	}break;
+	case WM_LBUTTONDOWN:
+	{
+		MessageBox(hwnd, TEXT("鼠标左键按下"), TEXT("提示"), MB_OK);
+		HDC hdc = GetDC(hwnd);
+		TextOut(hdc, 0, 100, TEXT("LButton clicked"), lstrlen(TEXT("LButton clicked")));
+		ReleaseDC(hwnd, hdc);		
+	}break;
+	case WM_PAINT:
+	{
+		HDC hdc;
+		PAINTSTRUCT ps;
+		hdc = BeginPaint(hwnd, &ps);
+		TextOut(hdc, 0, 0, TEXT("Hello world"), lstrlen(TEXT("Hello world")));
+		EndPaint(hwnd, &ps);
+	}break;
+	case WM_CLOSE:
+		if (IDYES == MessageBox(hwnd, TEXT("确定退出窗口？"), TEXT("即将退出"), MB_YESNO))
+		{
+			DestroyWindow(hwnd);
+		}
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+}

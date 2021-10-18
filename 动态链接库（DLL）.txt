@@ -137,7 +137,6 @@ Windows操作系统平台：
             // GetFullPathName根据程序工作目录组合得到完整路径
             // 但由于编译器原因，程序工作目录可能并非exe程序所在目录
             // 这里先更改当前工作目录为exe程序所在目录
-            GetCurrentDirectory(100, szCurWorkDir);
             GetModuleFileName(NULL, szCurWorkDir, 100);
             *(_tcsrchr(szCurWorkDir, TEXT('\\')))=0;
             SetCurrentDirectory(szCurWorkDir);
