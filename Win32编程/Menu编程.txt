@@ -32,6 +32,50 @@ EnableMenuItem
 	激活/禁用某个菜单项，可以是子菜单中的某个菜单项或整个菜单栏中的某一项
 	注意：经测试，在Windows11 VS2017中，MF_GRAYED不仅变灰，子菜单按下消息也会失效
 	
+DrawMenuBar
+	当菜单发生变化时，必须调用DrawMenuBar来立刻重绘菜单状态
+
+DeleteMenu
+	删除菜单或菜单项
+
+AppendMenu
+	动态插入菜单
+		参考代码：
+			HMENU hMenu = ::GetMenu(hWnd);
+			HMENU hSubMenu = ::GetSubMenu(hMenu, 1);
+			::AppendMenu(hMenu, MF_POPUP | MF_STRING, (UINT_PTR)hSubMenu, TEXT("new"));
+			::DrawMenuBar(hWnd);	// 刷新菜单，否则new子菜单不会立刻出现
+
+InsertMenuItem
+	动态插入菜单项
+	参考代码（仅经过简单测试，需进一步查看MSDN资料完善）：
+		HMENU hMenu = ::GetMenu(hWnd);
+		HMENU hSubMenu = ::GetSubMenu(hMenu, 0);
+		MENUITEMINFO menuitem = { 0 };
+		menuitem.cbSize = sizeof(MENUITEMINFO);
+		menuitem.fMask = MIIM_STRING | MIIM_ID;
+		menuitem.fType = 0;
+		menuitem.fState = MFS_ENABLED;
+		menuitem.wID = 100001;
+		menuitem.hSubMenu = hSubMenu;
+		menuitem.hbmpChecked = NULL;
+		menuitem.hbmpUnchecked = NULL;
+		menuitem.dwItemData = NULL;
+		menuitem.dwTypeData = (TCHAR*)TEXT("OK");
+		::InsertMenuItem(hSubMenu, 0, TRUE, &menuitem);
+
+TrackPopupMenu
+	弹出菜单（鼠标右键弹出菜单）
+	参考代码（仅经过简单测试，需进一步查看MSDN资料完善）：	
+		POINT point;
+		point.x = LOWORD(lParam);
+		point.y = HIWORD(lParam);
+		::ClientToScreen(hWnd, &point);
+		HMENU hMenu = ::GetMenu(hWnd);
+		HMENU hSubMenu = ::GetSubMenu(hMenu, 0);
+		::TrackPopupMenu(hSubMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON | TPM_HORPOSANIMATION, point.x, point.y, 0, hWnd, NULL);
+
+
 MFC中的操作
 	对某菜单项打勾
 	GetMenu()->GetSubMenu(0)->CheckMenuItem(ID_32771, MF_BYCOMMAND | MF_CHECKED);
