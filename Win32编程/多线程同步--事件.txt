@@ -14,7 +14,7 @@
 - 等待事件被触发 WaitForSingleObject(g_hEvent, INFINITE);
 - 触发 SetEvent(g_hEvent);
 - 其他操作....
-- 重置激活 SetEvent(g_hEvent);
+- 重置激活 ResetEvent(g_hEvent);
 - 销毁 CloseHandle(g_hEvent);
 
 
