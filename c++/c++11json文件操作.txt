@@ -1,0 +1,48 @@
+这里使用第三方库nlohmann/json进行json操作
+
+（假定当前路径下有info.json，内容如下）
+***********************
+{
+    "age": 28,
+    "city": "Ningbo",
+    "gender": "male",
+    "major": "vehicle",
+    "name": "Jerk"
+}
+***********************
+json文件读取（读取info.json中的某些属性）
+	using json = nlohmann::json;
+	std::ifstream jsonFile;
+	jsonFile.open("./info.json");
+	if (!jsonFile.is_open())
+	{
+		std::cout << "open failed" << std::endl;
+		return 0;
+	}
+	std::stringstream rawData;
+	rawData << jsonFile.rdbuf();
+	jsonFile.close();
+	json info = json::parse(rawData.str());  // 直接rawData也可以传入并解析为json对象
+	
+	// json info;
+	// jsonFile >> info;      // 推荐这种方式，上面方法只是展示打开文件并读取的通用方法
+	
+	auto age = info["age"];          // 返回的是json类型变量
+	std::string city = info["city"]; // 可以直接用正确的类型进行转化
+	//int name = info["name"];       // 但类型不匹配会报错
+	json gender = info.at("gender"); // 也可以用at来获取，效果和operator[]一样
+
+json文件写入（向info.json中增加新的属性并另外为新文件）
+	info["habit"] = std::array<std::string, 3>{"computer", "bike", "swimming"};
+    std::ofstream output("./newInfo.json");
+    output << std::setw(4) << info << std::endl;
+
+
+std::string转为json对象
+	json j1 = "{\"happy\":true,\"pi\":3.141}"_json;
+	auto j2 = R"({"happy":true,"pi":3.141})"_json;
+	auto j3 = json::parse({\"happy\":true,\"pi\":3.141});
+	
+json对象转为std::string
+	std::string s = j.dump();
+	
